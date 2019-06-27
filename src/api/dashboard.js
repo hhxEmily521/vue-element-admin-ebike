@@ -7,3 +7,15 @@ export function getCounts() {
     method: 'post'
   })
 }
+export function getMarkers() {
+  return request({
+    url: '/dashboard/carMapLoc',
+    method: 'post'
+  })
+}
+export function getCarType() {
+  return request({
+    url: '/dashboard/carType',
+    method: 'post'
+  })
+}
