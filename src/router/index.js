@@ -79,22 +79,22 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
   },
-  {
-    path: '/documentation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/documentation',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/documentation/index'),
+  //       name: 'Documentation',
+  //       meta: { title: 'Documentation', icon: 'documentation', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/guide',
     component: Layout,
@@ -104,7 +104,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/guide/index'),
         name: 'Guide',
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
+        meta: { title: '引导', icon: 'guide', noCache: true }
       }
     ]
   },
@@ -136,7 +136,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
-      title: 'Permission',
+      title: '权限',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -170,7 +170,29 @@ export const asyncRoutes = [
       }
     ]
   },
-
+  {
+    path: '/elecfence',
+    component: Layout,
+    redirect: '/elec-fence/fence-table',
+    alwaysShow: true, // will always show the root menu
+    name: 'elecFence',
+    meta: {
+      title: '电子围栏',
+      icon: 'lock',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'page',
+        component: () => import('@/views/elec-fence/fence-table'),
+        name: 'elecFenceTable',
+        meta: {
+          title: '电子围栏列表',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
   {
     path: '/icon',
     component: Layout,

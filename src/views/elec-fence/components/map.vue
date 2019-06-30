@@ -2,6 +2,7 @@
   <div>
     <div id="container" />
     <div class="green-btn" @click="getMapCenter"> 中心位置</div>
+    <img src="../../../assets/images/local.svg"/>
   </div>
 
 </template>
@@ -12,6 +13,7 @@ export default {
   name: 'Map',
   data() {
     return {
+      imgUrl: '/static/img/local.ed3e6852.svg',
       theMap: null,
       carType: null,
       thmarkers: null
@@ -35,8 +37,9 @@ export default {
       this.loadMarkers(this.thmarkers)
     },
     init() {
-    // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
-    // 设置地图中心点
+      let that = this
+      // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
+      // 设置地图中心点
       const myLatlng = new qq.maps.LatLng(39.916527, 116.397128)
       // 定义工厂模式函数
       const myOptions = {
@@ -50,8 +53,10 @@ export default {
         this.theMap,
         'click',
         function(event) {
+          that.setMapZoom()
+          that.$emit('update',event.latLng.getLat(),event.latLng.getLng())
           console.log('您点击的位置为:[' + event.latLng.getLng() +
-            ',' + event.latLng.getLat() + ']')
+              ',' + event.latLng.getLat() + ']')
         }
       )
     },
@@ -64,7 +69,7 @@ export default {
         var origin = new qq.maps.Point(0, 0)
         console.log(this.carType[data[i].type].imgUrl)
         var icon = new qq.maps.MarkerImage(
-          this.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
+          this.imgUrl,
           size,
           origin,
           anchor
@@ -77,13 +82,13 @@ export default {
         var infoWin = new qq.maps.InfoWindow({
           map: this.theMap
         })
-        qq.maps.event.addListener(marker, 'click', function() {
-          infoWin.open()
-          infoWin.setContent('<div style="text-align:center;white-space:' +
-            'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
-          // 提示窗位置
-          infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
-        })
+        // qq.maps.event.addListener(marker, 'click', function() {
+        //   infoWin.open()
+        //   infoWin.setContent('<div style="text-align:center;white-space:' +
+        //       'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
+        //   // 提示窗位置
+        //   infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
+        // })
       }
       this.setBounds(data)// 自动调整地图显示范围
     },
@@ -106,6 +111,9 @@ export default {
     // 修改地图中心点
     changeMapCenter(lat, lng) {
       this.theMap.setCenter(new qq.maps.LatLng(lat, lng))
+    },
+    setMapZoom(z) {
+      this.theMap.setZoom(18)
     }
   }
 }
@@ -114,7 +122,7 @@ export default {
 <style scoped>
   #container{
     width: 100%;
-    min-height:250px ;
+    min-height:350px ;
   }
   .green-btn{
     text-align: center;

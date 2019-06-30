@@ -10,18 +10,18 @@ for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
     timestamp: +Mock.Random.date('T'),
-    author: '@first',
+    address: '@region@province@city@county',
     reviewer: '@first',
-    title: '@title(5, 10)',
+    title: '@county',
     content_short: 'mock data',
     content: baseContent,
     forecast: '@float(0, 100, 2, 2)',
     importance: '@integer(1, 3)',
-    'type|1': ['CN', 'US', 'JP', 'EU'],
-    'status|1': ['published', 'draft', 'deleted'],
+    'type|1': ['CN', 'US'],
+    'status|1': ['发布', '草稿', '删除'],
     display_time: '@datetime',
     comment_disabled: true,
-    pageviews: '@integer(300, 5000)',
+    pageviews: '@integer(20, 500)/@integer(400, 550)',
     image_uri,
     platforms: ['a-platform']
   }))
@@ -29,7 +29,7 @@ for (let i = 0; i < count; i++) {
 
 export default [
   {
-    url: '/article/list',
+    url: '/fence/list',
     type: 'get',
     response: config => {
       const { importance, type, title, page = 1, limit = 20, sort } = config.query
@@ -58,32 +58,33 @@ export default [
   },
 
   {
-    url: '/article/detail',
+    url: '/fence/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
-      for (const article of List) {
-        if (article.id === +id) {
+      for (const fence of List) {
+        if (fence.id === +id) {
           return {
             code: 20000,
-            data: article
+            data: fence
           }
         }
       }
     }
   },
+
   {
-    url: '/article/pv',
+    url: '/fence/ebikeNum',
     type: 'get',
     response: _ => {
       return {
         code: 20000,
         data: {
-          pvData: [
-            { key: 'PC', pv: 1024 },
-            { key: 'mobile', pv: 1024 },
-            { key: 'ios', pv: 1024 },
-            { key: 'android', pv: 1024 }
+          ebikeNumData: [
+            { key: 'normal', text: '正常', ebikeNum: 524 },
+            { key: 'noElectric', text: '低电', ebikeNum: 24 },
+            { key: 'problem', text: '故障', ebikeNum: 18 },
+            { key: 'worthless', text: '报废', ebikeNum: 12 }
           ]
         }
       }
@@ -91,7 +92,7 @@ export default [
   },
 
   {
-    url: '/article/create',
+    url: '/fence/create',
     type: 'post',
     response: _ => {
       return {
@@ -102,7 +103,7 @@ export default [
   },
 
   {
-    url: '/article/update',
+    url: '/fence/update',
     type: 'post',
     response: _ => {
       return {

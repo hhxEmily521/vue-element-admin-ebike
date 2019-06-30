@@ -59,9 +59,9 @@ const carsInfo = {
     }
   ]
 }
-//type : normal | noElectric | worthless | problem
-const carMapLoc =[ { lat: 39.775570, lng: 116.297190,type: 'normal'}, { lat: 39.735770, lng: 116.607190,type: 'noElectric'}, { lat: 39.715520, lng: 116.997190, type: 'worthless'}, { lat: 39.725520, lng: 116.697190,type: 'problem'}]
-const carType= {
+// type : normal | noElectric | worthless | problem
+const carMapLoc = [{ lat: 39.775570, lng: 116.297190, type: 'normal' }, { lat: 39.735770, lng: 116.607190, type: 'noElectric' }, { lat: 39.715520, lng: 116.997190, type: 'worthless' }, { lat: 39.725520, lng: 116.697190, type: 'problem' }]
+const carType = {
   normal: {
     imgUrl: 'https://i.gtja.com/wxcos/assets/themes/1.2.1/images/icons/app/shortcut/zijinguanli_f17272.svg?type=normal'
   },
@@ -86,7 +86,7 @@ export default [
         data: carsInfo
       }
     }
-  },  {
+  }, {
     url: '/dashboard/carMapLoc',
     type: 'post',
     response: _ => {
