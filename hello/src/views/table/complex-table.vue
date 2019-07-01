@@ -12,16 +12,16 @@
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
+        Search
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加
+        Add
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        导出
+        Export
       </el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        操作人
+        reviewer
       </el-checkbox>
     </div>
 
@@ -40,23 +40,23 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="时间" width="150px" align="center">
+      <el-table-column label="Date" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="120px">
+      <el-table-column label="Title" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag effect="dark" :type="row.type =='US'?'danger':'' ">{{ row.type | typeFilter }}</el-tag>
+          <el-tag>{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="地址" min-width="150px" align="center">
+      <el-table-column label="Author" width="110px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.address }}</span>
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="操作人" width="110px" align="center">
+      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
         <template slot-scope="scope">
           <span style="color:red;">{{ scope.row.reviewer }}</span>
         </template>
@@ -66,32 +66,32 @@
           <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
-      <el-table-column label="车容比" align="center" width="95">
+      <el-table-column label="Readings" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchEbikeNum(row.pageviews)">{{ row.pageviews }}</span>
+          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" width="100">
+      <el-table-column label="Status" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
+            Edit
           </el-button>
-          <el-button v-if="row.status!='发布'" size="mini" type="success" @click="handleModifyStatus(row,'发布')">
-            发布
+          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+            Publish
           </el-button>
-          <el-button v-if="row.status!='草稿'" size="mini" @click="handleModifyStatus(row,'草稿')">
-            草稿
+          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+            Draft
           </el-button>
-          <el-button v-if="row.status!='删除'" size="mini" type="danger" @click="handleModifyStatus(row,'删除')">
-            删除
+          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
+            Delete
           </el-button>
         </template>
       </el-table-column>
@@ -100,76 +100,63 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
-        <el-row>
-          <el-form-item label="Title" prop="名称" placeholder="输入名称">
-            <el-input v-model="temp.title" />
-          </el-form-item>
-          <el-form-item label="保存">
-            <el-select v-model="temp.status" class="filter-item" placeholder="请选择">
-              <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-            </el-select>
-          </el-form-item>
-          <!--</el-row>-->
-          <!--<el-row>-->
-          <el-form-item label="Type" prop="状态">
-            <el-select v-model="temp.type" class="filter-item" placeholder="请选择">
-              <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Date" prop="timestamp">
-            <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择时间" />
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">
-            <el-input  @focus="inptFocus(index)"  :value="item.latlng"/>
-            <div>
-              <i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />
-              <i class="el-icon-remove-outline" @click="delInputBox(index)" />
-            </div>
-          </el-form-item>
-        </el-row>
-        <fence-map @update="updateLatLng" :markers="markerList" :markerIdx="latLngIntActive"/>
-
-        <!--<el-form-item label="Imp">-->
-        <!--<el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="Remark">-->
-        <!--<el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-        <!--</el-form-item>-->
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="Type" prop="type">
+          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Date" prop="timestamp">
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        </el-form-item>
+        <el-form-item label="Title" prop="title">
+          <el-input v-model="temp.title" />
+        </el-form-item>
+        <el-form-item label="Status">
+          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Imp">
+          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
+        </el-form-item>
+        <el-form-item label="Remark">
+          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          取消
+          Cancel
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
+          Confirm
         </el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="">
-      <el-table :data="ebikeNumData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="text" label="车辆状态" />
-        <el-table-column prop="ebikeNum" label="辆" />
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="key" label="Channel" />
+        <el-table-column prop="pv" label="Pv" />
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">确认</el-button>
+        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, fetchEbikeNum, createFence, updateFence } from '@/api/fence'
+import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import fenceMap from './components/map'
+
 const calendarTypeOptions = [
-  { key: 'CN', display_name: '启用' },
-  { key: 'US', display_name: '停用' }
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -180,17 +167,16 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, fenceMap },
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
-      let sta = ''
-      switch (status) {
-        case '发布':sta = 'success'; break
-        case '草稿':sta = 'info'; break
-        case '删除':sta = 'danger'; break
+      const statusMap = {
+        published: 'success',
+        draft: 'info',
+        deleted: 'danger'
       }
-      return sta
+      return statusMap[status]
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
@@ -212,8 +198,8 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      sortOptions: [{ label: 'ID 增序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
-      statusOptions: ['已发布', '草稿', '删除'],
+      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         id: undefined,
@@ -227,14 +213,11 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑',
-        create: '创建'
+        update: 'Edit',
+        create: 'Create'
       },
-      markerList:[{ lat: '', lng: ''},{ lat: '', lng: ''},{ lat: '', lng: ''},{ lat: '', lng: ''}],
-      latLngInputList: [{ lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }],
-      latLngIntActive: 0,
       dialogPvVisible: false,
-      ebikeNumData: [],
+      pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
@@ -247,34 +230,6 @@ export default {
     this.getList()
   },
   methods: {
-    updateLatLng(lat, lng) {
-      this.$set(this.latLngInputList,this.latLngIntActive,{ lat: lat, lng: lng, latlng: lat + '_' + lng })
-      this.$set(this.markerList,this.latLngIntActive,{ lat: lat, lng: lng})
-    },
-    inptFocus(index) {
-      this.latLngIntActive = index
-      console.log(this.latLngIntActive)
-    },
-    addInputBox(index) {
-      if (this.latLngInputList.length < 10) {
-        this.latLngInputList.splice(index, 0, { inputBox: { lat: '', lng: '' }})
-      } else {
-        this.$message({
-          message: '最多添加10个坐标点',
-          type: 'warning'
-        })
-      }
-    },
-    delInputBox(index) {
-      if (this.latLngInputList.length > 4) {
-        this.latLngInputList.splice(index, 1)
-      } else {
-        this.$message({
-          message: '至少添加4个坐标点',
-          type: 'warning'
-        })
-      }
-    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -335,8 +290,8 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.address = '上海浦东'
-          createFence(this.temp).then(() => {
+          this.temp.author = 'vue-element-admin'
+          createArticle(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -363,7 +318,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateFence(tempData).then(() => {
+          updateArticle(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
@@ -392,25 +347,25 @@ export default {
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
     },
-    handleFetchEbikeNum(num) {
-      fetchEbikeNum(num).then(response => {
-        this.ebikeNumData = response.data.ebikeNumData
+    handleFetchPv(pv) {
+      fetchPv(pv).then(response => {
+        this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })
     },
     handleDownload() {
       this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-          const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-          const data = this.formatJson(filterVal, this.list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: 'table-list'
-          })
-          this.downloadLoading = false
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
+        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const data = this.formatJson(filterVal, this.list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: 'table-list'
         })
+        this.downloadLoading = false
+      })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
@@ -424,16 +379,3 @@ export default {
   }
 }
 </script>
-<style>
-  .el-dialog{
-    width: 86%;
-  }
-  .el-row  {
-    display: flex;
-    flex-flow: row;
-    align-content: space-around;
-  }
-  .el-input{
-    margin-right: 20px;
-  }
-</style>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div id="container" />
-    <div class="green-btn" @click="getMapCenter"> 中心位置</div>
     <img src="../../../assets/images/local.svg"/>
+    <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{cursorLatLng.lat+'--'+cursorLatLng.lng}}</div>
   </div>
 
 </template>
@@ -11,17 +11,31 @@
 import { getCarType, getMarkers } from '@/api/dashboard'
 export default {
   name: 'Map',
+  props:{markers:{type:Array}, markerIdx:{type: Number}},
   data() {
     return {
       imgUrl: '/static/img/local.ed3e6852.svg',
       theMap: null,
       carType: null,
-      thmarkers: null
+      thmarkers: this.markers,
+      labelLeft:0,
+      labelTop:10,
+      cursorLatLng:{lat:0,lng:0},
+      showLabel:false,
+      markersArray:[]
     }
   },
   mounted() {
-    this.getCarType()
+    // this.getCarType()
     this.init()
+  },
+  watch:{
+    thmarkers(val){
+      // this.val = this.thmarkers;
+      this.deleteOverlays()
+      this.loadMarkers(this.thmarkers)
+      this.loadPolyline(this.thmarkers)
+    }
   },
   methods: {
     async getCarType() {
@@ -51,47 +65,110 @@ export default {
       this.theMap = new qq.maps.Map(document.getElementById('container'), myOptions)
       qq.maps.event.addListener(
         this.theMap,
+        'mousemove',
+        function(event) {
+          that.showLabel=true
+          that.labelLeft = document.body.scrollLeft + event.cursorPixel.x;
+          that.labelTop = event.cursorPixel.y+180;  //document.body.scrollTop
+          that.cursorLatLng={lat:event.latLng.getLat(),lng:event.latLng.getLng()}
+          // console.log('您mousemove的位置为:[' + event.latLng.getLng() +
+          //     ',' + event.latLng.getLat() + ']')
+        }
+      )
+      qq.maps.event.addListener(
+        this.theMap,
+        'mouseout',
+        function(event) {
+          that.showLabel=false
+        }
+      )
+      qq.maps.event.addListener(
+        this.theMap,
         'click',
         function(event) {
           that.setMapZoom()
           that.$emit('update',event.latLng.getLat(),event.latLng.getLng())
           console.log('您点击的位置为:[' + event.latLng.getLng() +
-              ',' + event.latLng.getLat() + ']')
+            ',' + event.latLng.getLat() + ']')
         }
       )
     },
     loadMarkers(data) {
       // 添加标记
       for (let i = 0; i < data.length; i++) {
-        // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
-        var anchor = new qq.maps.Point(0, 39)
-        var size = new qq.maps.Size(42, 68)
-        var origin = new qq.maps.Point(0, 0)
-        console.log(this.carType[data[i].type].imgUrl)
-        var icon = new qq.maps.MarkerImage(
-          this.imgUrl,
-          size,
-          origin,
-          anchor
-        )
-        var marker = new qq.maps.Marker({
-          position: new qq.maps.LatLng(data[i].lat, data[i].lng),
-          map: this.theMap
-        })
-        marker.setIcon(icon)
+        this.addMarker(data[i].lat, data[i].lng)
         var infoWin = new qq.maps.InfoWindow({
           map: this.theMap
         })
-        // qq.maps.event.addListener(marker, 'click', function() {
-        //   infoWin.open()
-        //   infoWin.setContent('<div style="text-align:center;white-space:' +
-        //       'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
-        //   // 提示窗位置
-        //   infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
-        // })
+        qq.maps.event.addListener(marker, 'click', function() {
+          infoWin.open()
+          infoWin.setContent('<div style="text-align:center;white-space:' +
+              'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
+          infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
+        })
       }
-      this.setBounds(data)// 自动调整地图显示范围
+      // this.setBounds(data)// 自动调整地图显示范围
     },
+    loadPolyline(data){
+      let LatLngObj=[]
+      for (let i = 0; i < data.length; i++) {
+        LatLngObj.push( new qq.maps.LatLng(data.lat, data.lng))
+      }
+        var polyline = new qq.maps.Polyline({
+        path:LatLngObj,
+        strokeColor: '#000000',
+        strokeWeight: 10,
+        map:this.theMap
+      });
+    },
+    //添加标记
+    addMarker(lat,lng) {
+  var marker = new qq.maps.Marker({
+    position: new qq.maps.LatLng(lat,lng),
+    map: this.theMap
+  });
+  // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
+      var anchor = new qq.maps.Point(20,28)
+      var size = new qq.maps.Size(42, 68)
+      var origin = new qq.maps.Point(0, 0)
+      var icon = new qq.maps.MarkerImage(
+        this.imgUrl,
+        size,
+        origin,
+        anchor
+      )
+      marker.setIcon(icon)
+  this.markersArray.push(marker);
+},
+
+//清除覆盖层
+ clearOverlays() {
+  if (this.markersArray) {
+    for (let i in this.markersArray) {
+      this.markersArray[i].setMap(null);
+    }
+  }
+},
+
+//显示覆盖层
+ showOverlays() {
+  if (this.markersArray) {
+    for (let i in this.markersArray) {
+      this.markersArray[i].setMap(this.theMap);
+    }
+  }
+},
+
+
+//删除覆盖物
+ deleteOverlays() {
+  if (this.markersArray) {
+    for (let i in this.markersArray) {
+      this.markersArray[i].setMap(null);
+    }
+    this.markersArray.length = 0;
+  }
+},
     setBounds(coords) {
       // 一组坐标点
       // 创建LatLngBounds实例
@@ -119,10 +196,20 @@ export default {
 }
 </script>
 
-<style scoped>
+<style type="scss">
   #container{
     width: 100%;
     min-height:350px ;
+    &>{
+      cursor: crosshair;
+    }
+
+  }
+  .latlngLabel{
+    border: 1px solid black;
+    position: absolute;
+    background: #fffff8;
+
   }
   .green-btn{
     text-align: center;
