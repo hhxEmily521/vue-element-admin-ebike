@@ -9,6 +9,8 @@
 
 <script>
 import { getCarType, getMarkers } from '@/api/dashboard'
+import '@/utils/tmap.js'
+
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }},
@@ -28,9 +30,9 @@ export default {
   watch: {
     thmarkers(val) {
       // this.val = this.thmarkers;
-      this.deleteOverlays()
-      this.loadMarkers(this.thmarkers)
-      this.loadPolyline(this.thmarkers)
+      // this.deleteOverlays()
+      // this.loadMarkers(this.thmarkers)
+      // this.loadPolyline(this.thmarkers)
     }
   },
   mounted() {
@@ -54,42 +56,71 @@ export default {
       const that = this
       // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
       // 设置地图中心点
-      const myLatlng = new qq.maps.LatLng(39.916527, 116.397128)
+      const myLatlng = [116.397128, 39.916527]
       // 定义工厂模式函数
-      const myOptions = {
-        zoom: 13, // 设置地图缩放级别
-        center: myLatlng, // 设置中心点样式
-        mapTypeId: qq.maps.MapTypeId.ROADMAP // 设置地图样式详情参见MapType
+      const myOptions =
+      {
+        zoom: 10, // 设置地图显示的缩放级别
+        center: myLatlng, // 设置地图中心点坐标
+        layers: [new AMap.TileLayer.Satellite()], // 设置图层,可设置成包含一个或多个图层的数组
+        cursor: 'crosshair',
+        mapStyle: 'amap://styles/normal', // 设置地图的显示样式
+        viewMode: '2D', // 设置地图模式
+        lang: 'zh_cn' // 设置地图语言类型
+
       }
       // 获取dom元素添加地图信息
-      this.theMap = new qq.maps.Map(document.getElementById('container'), myOptions)
-      qq.maps.event.addListener(
-        this.theMap,
-        'mousemove',
+      that.theMap = new AMap.Map('container', myOptions)
+
+      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar', 'AMap.MouseTool'], function() {
+        var controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
+        that.theMap.addControl(new AMap.ToolBar())
+        that.theMap.addControl(controlBar)
+        //图层切换控件
+        // that.theMap.addControl(new AMap.BasicControl.LayerSwitcher({
+        //   position: 'rt' //right top，右上角
+        // }));
+        var mouseTool = new AMap.MouseTool(that.theMap)
+
+        // 用鼠标工具画多边形
+        var drawPolygon = mouseTool.polygon()
+        //在地图中添加MouseTool插件
+        var distanceTool = new AMap.MouseTool(that.theMap);
+        console.log(distanceTool.rule())
+
+
+        //测量
+
+        // 添加事件
+        AMap.event.addListener(mouseTool, 'draw', function(e) {
+          console.log(e.obj.getPath())// 获取路径/范围
+          distanceTool.rule()
+
+        })
+      })
+      that.theMap.on('mousemove',
         function(event) {
           that.showLabel = true
-          that.labelLeft = document.body.scrollLeft + event.cursorPixel.x
-          that.labelTop = event.cursorPixel.y + 180 // document.body.scrollTop
-          that.cursorLatLng = { lat: event.latLng.getLat(), lng: event.latLng.getLng() }
+          that.labelLeft = document.body.scrollLeft + event.pixel.x
+          that.labelTop = event.pixel.y + 180 // document.body.scrollTop
+          that.cursorLatLng = { lat: event.lnglat.getLat(), lng: event.lnglat.getLng() }
           // console.log('您mousemove的位置为:[' + event.latLng.getLng() +
           //     ',' + event.latLng.getLat() + ']')
         }
       )
-      qq.maps.event.addListener(
-        this.theMap,
+      that.theMap.on(
         'mouseout',
         function(event) {
           that.showLabel = false
         }
       )
-      qq.maps.event.addListener(
-        this.theMap,
+      that.theMap.on(
         'click',
         function(event) {
           that.setMapZoom()
-          that.$emit('update', event.latLng.getLat(), event.latLng.getLng())
-          console.log('您点击的位置为:[' + event.latLng.getLng() +
-            ',' + event.latLng.getLat() + ']')
+          that.$emit('update', event.lnglat.getLat(), event.lnglat.getLng())
+          console.log('您点击的位置为:[' + event.lnglat.getLng() +
+            ',' + event.lnglat.getLat() + ']')
         }
       )
     },

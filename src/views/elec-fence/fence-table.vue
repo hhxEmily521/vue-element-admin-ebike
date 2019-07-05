@@ -123,14 +123,14 @@
         </el-row>
         <el-row>
           <el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">
-            <el-input  @focus="inptFocus(index)"  :value="item.latlng"/>
+            <el-input :value="item.latlng" @focus="inptFocus(index)" />
             <div>
               <i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />
               <i class="el-icon-remove-outline" @click="delInputBox(index)" />
             </div>
           </el-form-item>
         </el-row>
-        <fence-map @update="updateLatLng" :markers="markerList" :markerIdx="latLngIntActive"/>
+        <fence-map :markers="markerList" :marker-idx="latLngIntActive" @update="updateLatLng" />
 
         <!--<el-form-item label="Imp">-->
         <!--<el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
@@ -230,7 +230,7 @@ export default {
         update: '编辑',
         create: '创建'
       },
-      markerList:[{ lat: '', lng: ''},{ lat: '', lng: ''},{ lat: '', lng: ''},{ lat: '', lng: ''}],
+      markerList: [{ lat: '', lng: '' }, { lat: '', lng: '' }, { lat: '', lng: '' }, { lat: '', lng: '' }],
       latLngInputList: [{ lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }, { lat: '', lng: '', latlng: '' }],
       latLngIntActive: 0,
       dialogPvVisible: false,
@@ -248,8 +248,8 @@ export default {
   },
   methods: {
     updateLatLng(lat, lng) {
-      this.$set(this.latLngInputList,this.latLngIntActive,{ lat: lat, lng: lng, latlng: lat + '_' + lng })
-      this.$set(this.markerList,this.latLngIntActive,{ lat: lat, lng: lng})
+      this.$set(this.latLngInputList, this.latLngIntActive, { lat: lat, lng: lng, latlng: lat + '_' + lng })
+      this.$set(this.markerList, this.latLngIntActive, { lat: lat, lng: lng })
     },
     inptFocus(index) {
       this.latLngIntActive = index
