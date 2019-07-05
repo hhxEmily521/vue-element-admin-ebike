@@ -3,6 +3,13 @@
     <div id="container" />
     <img src="../../../assets/images/local.svg">
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
+    <div class="input-card " style="width: 200px">
+      <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
+      <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
+      <button class="btn " type="primary" plain @click="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button>
+      <button class="btn " type="primary" plain @click="drawRectangle()" style="margin-bottom: 5px">绘制矩形</button>
+      <button class="btn " type="primary" plain @click="removeAllOverlay()" style="margin-bottom: 5px">清除绘制</button>
+    </div>
   </div>
 
 </template>
@@ -10,7 +17,7 @@
 <script>
 import { getCarType, getMarkers } from '@/api/dashboard'
 import '@/utils/tmap.js'
-
+import rMenu from '../../../utils/rMenu.js'
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }},
@@ -24,7 +31,10 @@ export default {
       labelTop: 10,
       cursorLatLng: { lat: 0, lng: 0 },
       showLabel: false,
-      markersArray: []
+      markersArray: [],
+      myLatlng : [116.397128, 39.916527],
+      mapZoom:10,
+      mouseTool:null
     }
   },
   watch: {
@@ -33,6 +43,23 @@ export default {
       // this.deleteOverlays()
       // this.loadMarkers(this.thmarkers)
       // this.loadPolyline(this.thmarkers)
+    },
+    mapZoom(val){
+      let that =this
+      if(val>16){
+        that.theMap.plugin(['AMap.MouseTool'], function() {
+          that.mouseTool = new AMap.MouseTool(that.theMap)
+          // 用鼠标工具画多边形
+          var drawPolygon =  that.mouseTool.polygon()
+          //在地图中添加MouseTool插件
+          var distanceTool = new AMap.MouseTool(that.theMap);
+          distanceTool.rule()
+          AMap.event.addListener( that.mouseTool, 'draw', function(e) {
+            console.log(e.obj.getPath())// 获取路径/范围
+          })
+        })
+      }
+
     }
   },
   mounted() {
@@ -56,12 +83,11 @@ export default {
       const that = this
       // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
       // 设置地图中心点
-      const myLatlng = [116.397128, 39.916527]
       // 定义工厂模式函数
       const myOptions =
       {
-        zoom: 10, // 设置地图显示的缩放级别
-        center: myLatlng, // 设置地图中心点坐标
+        zoom: that.mapZoom, // 设置地图显示的缩放级别
+        center: that.myLatlng, // 设置地图中心点坐标
         layers: [new AMap.TileLayer.Satellite()], // 设置图层,可设置成包含一个或多个图层的数组
         cursor: 'crosshair',
         mapStyle: 'amap://styles/normal', // 设置地图的显示样式
@@ -71,8 +97,7 @@ export default {
       }
       // 获取dom元素添加地图信息
       that.theMap = new AMap.Map('container', myOptions)
-
-      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar', 'AMap.MouseTool'], function() {
+      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar'], function() {
         var controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
         that.theMap.addControl(new AMap.ToolBar())
         that.theMap.addControl(controlBar)
@@ -80,24 +105,13 @@ export default {
         // that.theMap.addControl(new AMap.BasicControl.LayerSwitcher({
         //   position: 'rt' //right top，右上角
         // }));
-        var mouseTool = new AMap.MouseTool(that.theMap)
-
-        // 用鼠标工具画多边形
-        var drawPolygon = mouseTool.polygon()
-        //在地图中添加MouseTool插件
-        var distanceTool = new AMap.MouseTool(that.theMap);
-        console.log(distanceTool.rule())
-
-
-        //测量
-
-        // 添加事件
-        AMap.event.addListener(mouseTool, 'draw', function(e) {
-          console.log(e.obj.getPath())// 获取路径/范围
-          distanceTool.rule()
-
-        })
       })
+      //创建右键菜单
+      console.log(rMenu)
+     let menu = new rMenu.ContextMenu(that.theMap);
+      var lnglat = new AMap.LngLat(116.397, 39.918);
+      menu.contextMenu.open(that.theMap, lnglat);
+      window.menu=menu
       that.theMap.on('mousemove',
         function(event) {
           that.showLabel = true
@@ -124,7 +138,59 @@ export default {
         }
       )
     },
-    loadMarkers(data) {
+    removeAllOverlay(){
+
+      // 清除地图上所有添加的覆盖物
+      this.theMap.clearMap();
+    },
+
+    drawPolyline () {
+      this.mouseTool.polyline({
+    strokeColor: "#3366FF",
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    // 线样式还支持 'dashed'
+    strokeStyle: "solid",
+    // strokeStyle是dashed时有效
+    // strokeDasharray: [10, 5],
+  })
+},drawPolygon () {
+      this.mouseTool.polygon({
+    strokeColor: "#FF33FF",
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillColor: '#1791fc',
+    fillOpacity: 0.4,
+    // 线样式还支持 'dashed'
+    strokeStyle: "solid",
+    // strokeStyle是dashed时有效
+    // strokeDasharray: [30,10],
+  })
+}, drawRectangle () {
+      this.mouseTool.rectangle({
+    strokeColor:'red',
+    strokeOpacity:0.5,
+    strokeWeight: 6,
+    fillColor:'blue',
+    fillOpacity:0.5,
+    // strokeStyle还支持 solid
+    strokeStyle: 'solid',
+    // strokeDasharray: [30,10],
+  })
+}, drawCircle () {
+      this.mouseTool.circle({
+    strokeColor: "#FF33FF",
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillColor: '#1791fc',
+    fillOpacity: 0.4,
+    strokeStyle: 'solid',
+    // 线样式还支持 'dashed'
+    // strokeDasharray: [30,10],
+  })
+},loadMarkers(data) {
       // 添加标记
       for (let i = 0; i < data.length; i++) {
         this.addMarker(data[i].lat, data[i].lng)
@@ -221,12 +287,87 @@ export default {
     },
     setMapZoom(z) {
       this.theMap.setZoom(18)
+      this.mapZoom=18
     }
   }
 }
 </script>
 
 <style type="scss">
+  .input-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border-radius: .25rem;
+    width: 22rem;
+    border-width: 0;
+    border-radius: 0.4rem;
+    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .input-text {
+    line-height: 2rem;
+    margin-right: 2rem;
+  }
+
+  .info hr {
+    margin-right: 0;
+    margin-left: 0;
+    border-top-color: grey;
+  }
+
+  .info {
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: .25rem;
+    position: fixed;
+    top: 1rem;
+    background-color: white;
+    width: auto;
+    min-width: 22rem;
+    border-width: 0;
+    right: 1rem;
+    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
+  }
+
+  .code {
+    left: 1.5rem;
+    right: 1.5rem;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    overflow: auto;
+    margin-bottom: 0rem;
+  }
+
+  .code .btn {
+    top: 1rem;
+    position: absolute;
+    right: 1rem;
+  }
+  .context_menu{
+    background: white;
+    position: relative;
+    min-width: 12rem;
+    padding: 0;
+  }
+
+  .context_menu p{
+    cursor: pointer;
+    padding: 0.25rem 1.25rem;
+  }
+
+  .context_menu p:hover{
+    background: #ccc;
+  }
   #container{
     width: 100%;
     min-height:350px ;

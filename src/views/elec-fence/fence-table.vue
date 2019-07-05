@@ -110,8 +110,8 @@
               <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
-          <!--</el-row>-->
-          <!--<el-row>-->
+          </el-row>
+          <el-row>
           <el-form-item label="Type" prop="状态">
             <el-select v-model="temp.type" class="filter-item" placeholder="请选择">
               <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
@@ -121,15 +121,15 @@
             <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择时间" />
           </el-form-item>
         </el-row>
-        <el-row>
-          <el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">
-            <el-input :value="item.latlng" @focus="inptFocus(index)" />
-            <div>
-              <i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />
-              <i class="el-icon-remove-outline" @click="delInputBox(index)" />
-            </div>
-          </el-form-item>
-        </el-row>
+        <!--<el-row>-->
+          <!--<el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">-->
+            <!--<el-input :value="item.latlng" @focus="inptFocus(index)" />-->
+            <!--<div>-->
+              <!--<i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />-->
+              <!--<i class="el-icon-remove-outline" @click="delInputBox(index)" />-->
+            <!--</div>-->
+          <!--</el-form-item>-->
+        <!--</el-row>-->
         <fence-map :markers="markerList" :marker-idx="latLngIntActive" @update="updateLatLng" />
 
         <!--<el-form-item label="Imp">-->
@@ -222,7 +222,7 @@ export default {
         timestamp: new Date(),
         title: '',
         type: '',
-        status: 'published'
+        status: '草稿'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -319,7 +319,7 @@ export default {
         remark: '',
         timestamp: new Date(),
         title: '',
-        status: 'published',
+        status: '草稿',
         type: ''
       }
     },
@@ -424,13 +424,20 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
   .el-dialog{
     width: 86%;
   }
+  .el-form-item {
+    margin-bottom: 22px;
+    margin-left: 10px;
+  .el-form--label-left .el-form-item__label{
+    text-align: right;
+  }
+  }
   .el-row  {
     display: flex;
-    flex-flow: row;
+    /*flex-flow: row;*/
     align-content: space-around;
   }
   .el-input{
