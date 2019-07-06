@@ -1,14 +1,37 @@
 <template>
   <div>
     <div id="container" />
-    <img src="../../../assets/images/local.svg">
+    <!--<img src="../../../assets/images/local.svg">-->
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
     <div class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
-      <button class="btn " type="primary" plain @click="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button>
-      <button class="btn " type="primary" plain @click="drawRectangle()" style="margin-bottom: 5px">绘制矩形</button>
-      <button class="btn " type="primary" plain @click="removeAllOverlay()" style="margin-bottom: 5px">清除绘制</button>
+      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
+      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
+      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <el-select
+        v-model="inptVal"
+        clearable
+        filterable
+        remote
+        reserve-keyword
+        placeholder="请输入关键词"
+        :remote-method="searchAddress"
+        @change="selectTrigger(inptVal)"
+      >
+        <!--:loading="loading"-->
+        <!--multiple-->
+
+        <el-option
+          v-for="item in resOptions.tips"
+          :key="item.id"
+          :label="item.name"
+          :value="item.location.lng+'_'+item.location.lat"
+        >
+          <div style="">{{ item.name }}</div>
+          <div style="color: #8492a6; font-size: 13px">{{ item.district+item.address }}</div>
+        </el-option>
+      </el-select>
     </div>
   </div>
 
@@ -23,6 +46,8 @@ export default {
   props: { markers: { type: Array }, markerIdx: { type: Number }},
   data() {
     return {
+      inptVal: '',
+      resOptions: [],
       imgUrl: '/static/img/local.ed3e6852.svg',
       theMap: null,
       carType: null,
@@ -32,34 +57,42 @@ export default {
       cursorLatLng: { lat: 0, lng: 0 },
       showLabel: false,
       markersArray: [],
-      myLatlng : [116.397128, 39.916527],
-      mapZoom:10,
-      mouseTool:null
+      myLatlng: [117.214664, 29.29256],
+      mapZoom: 10,
+      mouseTool: null,
+      autoComplete: null,
+      myPolygon: []
     }
   },
   watch: {
+    inptVal(val) {
+      if (!val) {
+        this.resOptions = []
+      }
+    },
     thmarkers(val) {
       // this.val = this.thmarkers;
       // this.deleteOverlays()
       // this.loadMarkers(this.thmarkers)
       // this.loadPolyline(this.thmarkers)
     },
-    mapZoom(val){
-      let that =this
-      if(val>16){
+    mapZoom(val) {
+      const that = this
+      if (val > 16) {
         that.theMap.plugin(['AMap.MouseTool'], function() {
           that.mouseTool = new AMap.MouseTool(that.theMap)
           // 用鼠标工具画多边形
-          var drawPolygon =  that.mouseTool.polygon()
-          //在地图中添加MouseTool插件
-          var distanceTool = new AMap.MouseTool(that.theMap);
-          distanceTool.rule()
-          AMap.event.addListener( that.mouseTool, 'draw', function(e) {
-            console.log(e.obj.getPath())// 获取路径/范围
+          var drawPolygon = that.mouseTool.polygon()
+          // 在地图中添加MouseTool插件
+          // var distanceTool = new AMap.MouseTool(that.theMap)
+          // distanceTool.rule()
+          AMap.event.addListener(that.mouseTool, 'draw', function(e) {
+            // 获取路径/范围
+            that.myPolygon = e.obj.getPath()
+            console.log(that.myPolygon)
           })
         })
       }
-
     }
   },
   mounted() {
@@ -81,42 +114,63 @@ export default {
     },
     init() {
       const that = this
-      // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
-      // 设置地图中心点
-      // 定义工厂模式函数
+      var buildings = new AMap.Buildings({
+        'zooms': [1, 18],
+        'zIndex': 10,
+        'heightFactor': 2// 2倍于默认高度，3D下有效
+      })// 楼块图层
       const myOptions =
       {
         zoom: that.mapZoom, // 设置地图显示的缩放级别
         center: that.myLatlng, // 设置地图中心点坐标
-        layers: [new AMap.TileLayer.Satellite()], // 设置图层,可设置成包含一个或多个图层的数组
         cursor: 'crosshair',
-        mapStyle: 'amap://styles/normal', // 设置地图的显示样式
-        viewMode: '2D', // 设置地图模式
+        viewMode: '3D',
+        pitch: 60,
+        rotation: -35,
+        features: ['bg', 'road', 'point'], // 隐藏默认楼块
+        mapStyle: 'amap://styles/light',
+        layers: [new AMap.TileLayer.Satellite(), // 高德默认标准图层
+          buildings],
         lang: 'zh_cn' // 设置地图语言类型
 
       }
       // 获取dom元素添加地图信息
       that.theMap = new AMap.Map('container', myOptions)
       that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar'], function() {
-        var controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
+        const controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
         that.theMap.addControl(new AMap.ToolBar())
         that.theMap.addControl(controlBar)
-        //图层切换控件
+        // 图层切换控件
         // that.theMap.addControl(new AMap.BasicControl.LayerSwitcher({
         //   position: 'rt' //right top，右上角
         // }));
       })
-      //创建右键菜单
-      console.log(rMenu)
-     let menu = new rMenu.ContextMenu(that.theMap);
-      var lnglat = new AMap.LngLat(116.397, 39.918);
-      menu.contextMenu.open(that.theMap, lnglat);
-      window.menu=menu
+      // that.theMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], function() {
+      //   var autoOptions = {
+      //     // 城市，默认全国
+      //     city: '景德镇',
+      //     // 使用联想输入的input的id
+      //     input: 'input'
+      //   }
+      // that.autoComplete = new AMap.Autocomplete(autoOptions)
+      // var placeSearch = new AMap.PlaceSearch({
+      //   city: '景德镇',
+      //   map: that.theMap
+      // })
+      // that.theMap.on(that.autoComplete, 'select', function(e) {
+      //   // TODO 针对选中的poi实现自己的功能
+      //   placeSearch.search(e.poi.name)
+      // })
+      // })
+      // 创建右键菜单
+      const menu = new rMenu.ContextMenu(that.theMap)
+      // menu.contextMenu.open(that.theMap, lnglat)
+      window.menu = menu
       that.theMap.on('mousemove',
         function(event) {
           that.showLabel = true
           that.labelLeft = document.body.scrollLeft + event.pixel.x
-          that.labelTop = event.pixel.y + 180 // document.body.scrollTop
+          that.labelTop = event.pixel.y + 150 // document.body.scrollTop
           that.cursorLatLng = { lat: event.lnglat.getLat(), lng: event.lnglat.getLng() }
           // console.log('您mousemove的位置为:[' + event.latLng.getLng() +
           //     ',' + event.latLng.getLat() + ']')
@@ -138,103 +192,103 @@ export default {
         }
       )
     },
-    removeAllOverlay(){
+    selectTrigger(data) {
+      const Latlng = data.split('_')
+      this.theMap.setCenter(Latlng)
+      this.addMarker(Latlng)
+      this.setMapZoom()
 
-      // 清除地图上所有添加的覆盖物
-      this.theMap.clearMap();
+      console.log(this.myLatlng)
+    },
+    searchAddress(keyword) {
+      console.log(keyword)
+      const that = this
+      if (keyword.length > 3) {
+        console.log('大于3')
+        AMap.plugin('AMap.Autocomplete', function() {
+          // 实例化Autocomplete
+          var autoOptions = {
+            city: '全国'
+          }
+          var autoComplete = new AMap.Autocomplete(autoOptions)
+          autoComplete.search(keyword, function(status, result) {
+            that.resOptions = result
+            console.log(result)
+            // 搜索成功时，result即是对应的匹配数据
+            // var node = new PrettyJSON.view.Node({
+            //   el: document.querySelector("#input-info"),
+            //   data: result
+            // });
+          })
+        })
+      }
     },
 
-    drawPolyline () {
+    removeAllOverlay() {
+      // 清除地图上所有添加的覆盖物
+      this.theMap.clearMap()
+    },
+
+    drawPolyline() {
       this.mouseTool.polyline({
-    strokeColor: "#3366FF",
-    strokeOpacity: 1,
-    strokeWeight: 6,
-    // 线样式还支持 'dashed'
-    strokeStyle: "solid",
-    // strokeStyle是dashed时有效
-    // strokeDasharray: [10, 5],
-  })
-},drawPolygon () {
+        strokeColor: '#3366FF',
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        // 线样式还支持 'dashed'
+        strokeStyle: 'solid'
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [10, 5],
+      })
+    },
+    drawPolygon() {
       this.mouseTool.polygon({
-    strokeColor: "#FF33FF",
-    strokeOpacity: 1,
-    strokeWeight: 6,
-    strokeOpacity: 0.2,
-    fillColor: '#1791fc',
-    fillOpacity: 0.4,
-    // 线样式还支持 'dashed'
-    strokeStyle: "solid",
-    // strokeStyle是dashed时有效
-    // strokeDasharray: [30,10],
-  })
-}, drawRectangle () {
+        strokeColor: '#FF33FF',
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        // 线样式还支持 'dashed'
+        strokeStyle: 'solid'
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [30,10],
+      })
+    }, drawRectangle() {
       this.mouseTool.rectangle({
-    strokeColor:'red',
-    strokeOpacity:0.5,
-    strokeWeight: 6,
-    fillColor:'blue',
-    fillOpacity:0.5,
-    // strokeStyle还支持 solid
-    strokeStyle: 'solid',
-    // strokeDasharray: [30,10],
-  })
-}, drawCircle () {
+        strokeColor: 'red',
+        strokeOpacity: 0.5,
+        strokeWeight: 2,
+        fillColor: 'blue',
+        fillOpacity: 0.5,
+        // strokeStyle还支持 solid
+        strokeStyle: 'solid'
+        // strokeDasharray: [30,10],
+      })
+    }, drawCircle() {
       this.mouseTool.circle({
-    strokeColor: "#FF33FF",
-    strokeOpacity: 1,
-    strokeWeight: 6,
-    strokeOpacity: 0.2,
-    fillColor: '#1791fc',
-    fillOpacity: 0.4,
-    strokeStyle: 'solid',
-    // 线样式还支持 'dashed'
-    // strokeDasharray: [30,10],
-  })
-},loadMarkers(data) {
+        strokeColor: '#FF33FF',
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        strokeStyle: 'solid'
+        // 线样式还支持 'dashed'
+        // strokeDasharray: [30,10],
+      })
+    }, loadMarkers(data) {
       // 添加标记
       for (let i = 0; i < data.length; i++) {
         this.addMarker(data[i].lat, data[i].lng)
       }
       // this.setBounds(data)// 自动调整地图显示范围
     },
-    loadPolyline(data) {
-      const LatLngObj = []
-      for (let i = 0; i < data.length; i++) {
-        LatLngObj.push(new qq.maps.LatLng(data.lat, data.lng))
-      }
-      var polyline = new qq.maps.Polyline({
-        path: LatLngObj,
-        strokeColor: '#000000',
-        strokeWeight: 10,
-        map: this.theMap
-      })
-    },
     // 添加标记
-    addMarker(lat, lng) {
-      var marker = new qq.maps.Marker({
-        position: new qq.maps.LatLng(lat, lng),
-        map: this.theMap
+    addMarker(latlng) {
+      // 创建一个 Marker 实例：
+      var marker = new AMap.Marker({
+        position: new AMap.LngLat(latlng[0], latlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        title: '北京'
       })
-      // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
-      var anchor = new qq.maps.Point(20, 28)
-      var size = new qq.maps.Size(42, 68)
-      var origin = new qq.maps.Point(0, 0)
-      var icon = new qq.maps.MarkerImage(
-        this.imgUrl,
-        size,
-        origin,
-        anchor
-      )
-      marker.setIcon(icon)
-      var infoWin = new qq.maps.InfoWindow({
-        map: this.theMap
-      })
-      qq.maps.event.addListener(marker, 'click', function() {
-        infoWin.open()
-        infoWin.setContent('<div style="text-align:center;white-space:' +
-          'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
-        infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
-      })
+      this.theMap.add(marker)
       this.markersArray.push(marker)
     },
 
@@ -281,13 +335,9 @@ export default {
       const centerLatLng = this.theMap.getCenter()
       console.log('lat:' + centerLatLng.lat, 'lng:' + centerLatLng.lng)
     },
-    // 修改地图中心点
-    changeMapCenter(lat, lng) {
-      this.theMap.setCenter(new qq.maps.LatLng(lat, lng))
-    },
     setMapZoom(z) {
       this.theMap.setZoom(18)
-      this.mapZoom=18
+      this.mapZoom = 18
     }
   }
 }
@@ -307,7 +357,7 @@ export default {
     border-radius: 0.4rem;
     box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
     position: fixed;
-    bottom: 1rem;
+    bottom: 4rem;
     right: 1rem;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
@@ -319,39 +369,15 @@ export default {
     margin-right: 2rem;
   }
 
-  .info hr {
-    margin-right: 0;
-    margin-left: 0;
-    border-top-color: grey;
+  .el-select-dropdown__item{
+    height: 68px;
   }
-
-  .info {
-    padding: .75rem 1.25rem;
-    margin-bottom: 1rem;
-    border-radius: .25rem;
-    position: fixed;
-    top: 1rem;
-    background-color: white;
-    width: auto;
-    min-width: 22rem;
-    border-width: 0;
-    right: 1rem;
-    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
-  }
-
-  .code {
-    left: 1.5rem;
-    right: 1.5rem;
-    top: 1.5rem;
-    bottom: 1.5rem;
-    overflow: auto;
-    margin-bottom: 0rem;
-  }
-
-  .code .btn {
-    top: 1rem;
-    position: absolute;
-    right: 1rem;
+   .btn {
+     width: 100%;
+     margin: 2px auto !important;
+    /*top: 1rem;*/
+    /*position: absolute;*/
+    /*right: 1rem;*/
   }
   .context_menu{
     background: white;
@@ -370,6 +396,7 @@ export default {
   }
   #container{
     width: 100%;
+    height: 70vh;
     min-height:350px ;
     &>{
       cursor: crosshair;

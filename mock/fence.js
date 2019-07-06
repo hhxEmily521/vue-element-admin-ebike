@@ -21,7 +21,9 @@ for (let i = 0; i < count; i++) {
     'status|1': ['发布', '草稿', '删除'],
     display_time: '@datetime',
     comment_disabled: true,
-    pageviews: '@integer(20, 500)/@integer(400, 550)',
+    pageviews: {},
+    hasBike: '@integer(20, 500)',
+    totalBike: '@integer(400, 550)',
     image_uri,
     platforms: ['a-platform']
   }))

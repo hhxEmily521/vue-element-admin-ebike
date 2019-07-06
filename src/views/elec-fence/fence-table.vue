@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
+      <el-input v-model="listQuery.title" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <!--<el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
+      <!--<el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <!--</el-select>-->
+      <el-select v-model="listQuery.type" placeholder="启用/停用" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -20,9 +20,9 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        操作人
-      </el-checkbox>
+      <!--<el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">-->
+      <!--操作人-->
+      <!--</el-checkbox>-->
     </div>
 
     <el-table
@@ -48,7 +48,6 @@
       <el-table-column label="名称" width="120px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag effect="dark" :type="row.type =='US'?'danger':'' ">{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="地址" min-width="150px" align="center">
@@ -56,27 +55,29 @@
           <span>{{ scope.row.address }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="操作人" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp" width="80px">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
+      <!--<el-table-column v-if="showReviewer" label="操作人" width="110px" align="center">-->
+      <!--<template slot-scope="scope">-->
+      <!--<span style="color:red;">{{ scope.row.reviewer }}</span>-->
+      <!--</template>-->
+      <!--</el-table-column>-->
+      <!--<el-table-column label="Imp" width="80px">-->
+      <!--<template slot-scope="scope">-->
+      <!--<svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
+      <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column label="车容比" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchEbikeNum(row.pageviews)">{{ row.pageviews }}</span>
+          <span v-if="row.totalBike" class="link-type" @click="handleFetchEbikeNum(row.hasBike)">{{(typeof row.hasBike!='undefined'?row.hasBike:'0') +'/'+ row.totalBike}}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
+          <el-tag effect="dark" :type="row.type =='US'?'danger':'' ">{{ row.type | typeFilter }}</el-tag>
+
+          <!--<el-tag :type="row.status | statusFilter">-->
+          <!--{{ row.status }}-->
+          <!--</el-tag>-->
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
@@ -84,13 +85,14 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.status!='发布'" size="mini" type="success" @click="handleModifyStatus(row,'发布')">
-            发布
-          </el-button>
-          <el-button v-if="row.status!='草稿'" size="mini" @click="handleModifyStatus(row,'草稿')">
-            草稿
-          </el-button>
-          <el-button v-if="row.status!='删除'" size="mini" type="danger" @click="handleModifyStatus(row,'删除')">
+          <!--<el-button v-if="row.status!='发布'" size="mini" type="success" @click="handleModifyStatus(row,'发布')">-->
+          <!--发布-->
+          <!--</el-button>-->
+          <!--<el-button v-if="row.status!='草稿'" size="mini" @click="handleModifyStatus(row,'草稿')">-->
+          <!--草稿-->
+          <!--</el-button>-->
+          <!--v-if="row.status!='删除'"-->
+          <el-button size="mini" type="danger" @click="handleModifyStatus(row,'删除')">
             删除
           </el-button>
         </template>
@@ -99,36 +101,39 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog class="map-dialog" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
         <el-row>
-          <el-form-item label="Title" prop="名称" placeholder="输入名称">
+          <el-form-item label="名称" prop="名称" placeholder="输入名称">
             <el-input v-model="temp.title" />
           </el-form-item>
-          <el-form-item label="保存">
-            <el-select v-model="temp.status" class="filter-item" placeholder="请选择">
-              <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-            </el-select>
+          <el-form-item label="可容纳" prop="辆" placeholder="(辆)">
+            <el-input v-model="temp.totalBike" />
           </el-form-item>
-          </el-row>
-          <el-row>
-          <el-form-item label="Type" prop="状态">
+          <!--<el-form-item label="保存为">-->
+          <!--<el-select v-model="temp.status" class="filter-item" placeholder="请选择">-->
+          <!--<el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
+          <!--</el-select>-->
+          <!--</el-form-item>-->
+          <!--</el-row>-->
+          <!--<el-row>-->
+          <el-form-item label="启用状态" prop="状态">
             <el-select v-model="temp.type" class="filter-item" placeholder="请选择">
               <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
           </el-form-item>
-          <el-form-item label="Date" prop="timestamp">
+          <el-form-item label="日期" prop="timestamp">
             <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择时间" />
           </el-form-item>
         </el-row>
         <!--<el-row>-->
-          <!--<el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">-->
-            <!--<el-input :value="item.latlng" @focus="inptFocus(index)" />-->
-            <!--<div>-->
-              <!--<i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />-->
-              <!--<i class="el-icon-remove-outline" @click="delInputBox(index)" />-->
-            <!--</div>-->
-          <!--</el-form-item>-->
+        <!--<el-form-item v-for="(item,index) in latLngInputList" :key="index" prop="状态" placeholder="经纬度" :label="'经纬度'+index">-->
+        <!--<el-input :value="item.latlng" @focus="inptFocus(index)" />-->
+        <!--<div>-->
+        <!--<i class="el-icon-circle-plus-outline" @click="addInputBox(index)" />-->
+        <!--<i class="el-icon-remove-outline" @click="delInputBox(index)" />-->
+        <!--</div>-->
+        <!--</el-form-item>-->
         <!--</el-row>-->
         <fence-map :markers="markerList" :marker-idx="latLngIntActive" @update="updateLatLng" />
 
@@ -237,6 +242,7 @@ export default {
       ebikeNumData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        ebikeNum: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
@@ -425,8 +431,9 @@ export default {
 }
 </script>
 <style lang="scss">
-  .el-dialog{
-    width: 86%;
+  .map-dialog .el-dialog{
+    margin:0!important;
+    width: 100%;
   }
   .el-form-item {
     margin-bottom: 22px;
