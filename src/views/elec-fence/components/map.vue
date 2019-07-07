@@ -1,15 +1,17 @@
 <template>
   <div>
     <div id="container" />
-    <!--<img src="../../../assets/images/local.svg">-->
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
     <div class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
-      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
-      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
-      <el-button class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'" style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
+      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'"  style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
+      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'"  style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <el-button class="btn" type="primary" v-show="drawType === 'polyon'" style="margin-bottom: 5px" @click="open()">开始编辑</el-button>
+      <el-button class="btn" type="primary" v-show="drawType === 'polyon'" @click="close()">结束编辑</el-button>
       <el-select
+        v-show="drawType !== 'polyon'"
         v-model="inptVal"
         clearable
         filterable
@@ -43,7 +45,7 @@ import '@/utils/tmap.js'
 import rMenu from '../../../utils/rMenu.js'
 export default {
   name: 'Map',
-  props: { markers: { type: Array }, markerIdx: { type: Number }},
+  props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
   data() {
     return {
       inptVal: '',
@@ -61,10 +63,14 @@ export default {
       mapZoom: 10,
       mouseTool: null,
       autoComplete: null,
-      myPolygon: []
+      myPolygon: [],
+      polyEditor: null
     }
   },
   watch: {
+    myPolygon(val) {
+      this.$emit('drawChange', { myPolygon: val, drawType: this.drawType })
+    },
     inptVal(val) {
       if (!val) {
         this.resOptions = []
@@ -97,7 +103,15 @@ export default {
   },
   mounted() {
     // this.getCarType()
+    const that = this
     this.init()
+    setTimeout(function() {
+      if (that.drawType === 'polyon') {
+        that.editPolygon(that.polygons)
+      } else {
+        that.editRectangle(that.polygons)
+      }
+    }, 2000)
   },
   methods: {
     async getCarType() {
@@ -186,7 +200,7 @@ export default {
         'click',
         function(event) {
           that.setMapZoom()
-          that.$emit('update', event.lnglat.getLat(), event.lnglat.getLng())
+          // that.$emit('update', event.lnglat.getLat(), event.lnglat.getLng())
           console.log('您点击的位置为:[' + event.lnglat.getLng() +
             ',' + event.lnglat.getLat() + ']')
         }
@@ -241,6 +255,7 @@ export default {
       })
     },
     drawPolygon() {
+      this.drawType = 'polyon'
       this.mouseTool.polygon({
         strokeColor: '#FF33FF',
         strokeWeight: 6,
@@ -252,7 +267,9 @@ export default {
         // strokeStyle是dashed时有效
         // strokeDasharray: [30,10],
       })
-    }, drawRectangle() {
+    },
+    drawRectangle() {
+      this.drawType = 'rectangle'
       this.mouseTool.rectangle({
         strokeColor: 'red',
         strokeOpacity: 0.5,
@@ -273,6 +290,68 @@ export default {
         strokeStyle: 'solid'
         // 线样式还支持 'dashed'
         // strokeDasharray: [30,10],
+      })
+    },
+    editPolygon() {
+      const that = this
+      var path = []
+      for (const plgn in this.polygons) {
+        console.log(this.polygons[plgn])
+        path.push([this.polygons[plgn].lng, this.polygons[plgn].lat])
+      }
+
+      var polygon = new AMap.Polygon({
+        path: path,
+        strokeColor: '#FF33FF',
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillOpacity: 0.4,
+        fillColor: '#1791fc',
+        zIndex: 50
+      })
+
+      this.theMap.add(polygon)
+      // 缩放地图到合适的视野级别
+      this.theMap.setFitView([polygon])
+
+      this.polyEditor = new AMap.PolyEditor(this.theMap, polygon)
+
+      this.polyEditor.on('addnode', function(event) {
+        console.log('触发事件：addnode')
+      })
+
+      this.polyEditor.on('adjust', function(event) {
+        console.log('触发事件：adjust')
+      })
+
+      this.polyEditor.on('removenode', function(event) {
+        console.log('触发事件：removenode')
+      })
+
+      this.polyEditor.on('end', function(event) {
+        console.log('触发事件： end')
+        // event.target 即为编辑后的多边形对象
+        that.myPolygon = event.target.B.path
+        that.$emit('drawChange', { myPolygon: event.target.B.path, drawType: 'polyon' })
+
+        console.log(event.target.B.path)
+      })
+    },
+    open() {
+      this.polyEditor.open()
+    },
+    close() {
+      this.polyEditor.close()
+    },
+    editRectangle(data) {
+      var Rectangle = new AMap.Rectangle({
+        bounds: new AMap.Bounds(new AMap.LngLat(data[0].lng, data[0].lat), new AMap.Bounds(new AMap.LngLat(data[3].lng, data[3].lat)))
+      })
+      Rectangle.setMap(this.theMap)
+
+      this.theMap.plugin(['AMap.RectangleEditor'], function() {
+        var RectangleEditor = new AMap.RectangleEditor(this.theMap, Rectangle)
+        RectangleEditor.open()
       })
     }, loadMarkers(data) {
       // 添加标记

@@ -67,7 +67,7 @@
       <!--</el-table-column>-->
       <el-table-column label="车容比" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.totalBike" class="link-type" @click="handleFetchEbikeNum(row.hasBike)">{{(typeof row.hasBike!='undefined'?row.hasBike:'0') +'/'+ row.totalBike}}</span>
+          <span v-if="row.totalBike" class="link-type" @click="handleFetchEbikeNum(row.hasBike)">{{ (typeof row.hasBike!='undefined'?row.hasBike:'0') +'/'+ row.totalBike }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
@@ -135,7 +135,8 @@
         <!--</div>-->
         <!--</el-form-item>-->
         <!--</el-row>-->
-        <fence-map :markers="markerList" :marker-idx="latLngIntActive" @update="updateLatLng" />
+        <!---->
+        <fence-map :polygons="temp.drawzPolygon" :drawType="temp.drawType" :markers="markerList" :marker-idx="latLngIntActive" @drawChange="polygonChange" />
 
         <!--<el-form-item label="Imp">-->
         <!--<el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
@@ -222,12 +223,10 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        importance: 1,
         remark: '',
         timestamp: new Date(),
         title: '',
-        type: '',
-        status: '草稿'
+        type: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -256,6 +255,10 @@ export default {
     updateLatLng(lat, lng) {
       this.$set(this.latLngInputList, this.latLngIntActive, { lat: lat, lng: lng, latlng: lat + '_' + lng })
       this.$set(this.markerList, this.latLngIntActive, { lat: lat, lng: lng })
+    },
+    polygonChange(plgn) {
+      this.temp.drawzPolygon = plgn.myPolygon
+      this.temp.drawType = plgn.drawType
     },
     inptFocus(index) {
       this.latLngIntActive = index

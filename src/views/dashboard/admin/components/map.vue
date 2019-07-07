@@ -1,102 +1,91 @@
 <template>
   <div>
     <div id="container" />
-    <div class="green-btn" @click="getMapCenter"> 中心位置</div>
+    <!--<div class="green-btn" @click="getMapCenter"> 中心位置</div>-->
   </div>
 
 </template>
 
 <script>
+import '@/utils/tmap.js'
 import { getCarType, getMarkers } from '@/api/dashboard'
 export default {
   name: 'Map',
   data() {
     return {
+      myLatlng: [117.214664, 29.29256],
       theMap: null,
       carType: null,
       thmarkers: null
     }
   },
   mounted() {
+    const that = this
     this.getCarType()
-    this.init()
+    setTimeout(function() {
+      that.init()
+    }, 2000)
   },
   methods: {
     async getCarType() {
       const res = await getCarType()
-      this.carType = res // res.data
+      this.carType = res.data // res
       console.log(res)
       this.getMarkers()
     },
     async getMarkers() {
+      const that = this
       const res = await getMarkers()
       this.thmarkers = res.data
       console.log(this.thmarkers)
-      this.loadMarkers(this.thmarkers)
+      setTimeout(function() {
+        that.loadMarkers(that.thmarkers)
+      }, 2000)
     },
     init() {
-    // 步骤：定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
-    // 设置地图中心点
-      const myLatlng = new qq.maps.LatLng(39.916527, 116.397128)
-      // 定义工厂模式函数
-      const myOptions = {
-        zoom: 13, // 设置地图缩放级别
-        center: myLatlng, // 设置中心点样式
-        mapTypeId: qq.maps.MapTypeId.ROADMAP // 设置地图样式详情参见MapType
-      }
-      // 获取dom元素添加地图信息
-      this.theMap = new qq.maps.Map(document.getElementById('container'), myOptions)
-      qq.maps.event.addListener(
-        this.theMap,
-        'click',
-        function(event) {
-          console.log('您点击的位置为:[' + event.latLng.getLng() +
-            ',' + event.latLng.getLat() + ']')
+      const that = this
+      const myOptions =
+        {
+          zoom: that.mapZoom, // 设置地图显示的缩放级别
+          center: that.myLatlng, // 设置地图中心点坐标
+          mapStyle: 'amap://styles/light',
+          // layers: [new AMap.TileLayer.Satellite()],
+          lang: 'zh_cn' // 设置地图语言类型
+
         }
-      )
+      // 获取dom元素添加地图信息
+      that.theMap = new AMap.Map('container', myOptions)
+      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar'], function() {
+        const controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
+        that.theMap.addControl(new AMap.ToolBar())
+        that.theMap.addControl(controlBar)
+      })
     },
     loadMarkers(data) {
+      console.log(data)
+      const that = this
+      const markerArray = []
       // 添加标记
       for (let i = 0; i < data.length; i++) {
         // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
-        var anchor = new qq.maps.Point(0, 39)
-        var size = new qq.maps.Size(42, 68)
-        var origin = new qq.maps.Point(0, 0)
-        console.log(this.carType[data[i].type].imgUrl)
-        var icon = new qq.maps.MarkerImage(
-          this.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
-          size,
-          origin,
-          anchor
-        )
-        var marker = new qq.maps.Marker({
-          position: new qq.maps.LatLng(data[i].lat, data[i].lng),
-          map: this.theMap
+        const marker = new AMap.Marker({
+          position: new AMap.LngLat(data[i].lng, data[i].lat),
+          offset: new AMap.Pixel(-10, -10),
+          icon: that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
+          title: '北京'
         })
-        marker.setIcon(icon)
-        var infoWin = new qq.maps.InfoWindow({
-          map: this.theMap
-        })
-        qq.maps.event.addListener(marker, 'click', function() {
-          infoWin.open()
-          infoWin.setContent('<div style="text-align:center;white-space:' +
-            'nowrap;margin:10px;"> ' + data[i].lat + '<br>' + data[i].lng + '<br> 第' + i + ' </div>')
-          // 提示窗位置
-          infoWin.setPosition(new qq.maps.LatLng(data[i].lat, data[i].lng))
-        })
+        markerArray.push(marker)
+        that.theMap.add(marker)
       }
-      this.setBounds(data)// 自动调整地图显示范围
+      this.setFitView(markerArray)// 自动调整地图显示范围
     },
-    setBounds(coords) {
+    setFitView(coords) {
       // 一组坐标点
-      // 创建LatLngBounds实例
-      var latlngBounds = new qq.maps.LatLngBounds()
-      // 将坐标逐一做为参数传入extend方法，latlngBounds会根据传入坐标自动扩展生成
-      for (var i = 0; i < coords.length; i++) {
-        latlngBounds.extend(new qq.maps.LatLng(coords[i].lat, coords[i].lng))
+      if (coords.length > 0) {
+        this.theMap.setFitView(coords)
+      } else {
+        this.theMap.setFitView()
       }
-      // 调用fitBounds自动调整地图显示范围
-      this.theMap.fitBounds(latlngBounds)
     },
     getMapCenter() {
       // 获取地图中心点
@@ -114,7 +103,7 @@ export default {
 <style scoped>
   #container{
     width: 100%;
-    min-height:250px ;
+    min-height:450px ;
   }
   .green-btn{
     text-align: center;
