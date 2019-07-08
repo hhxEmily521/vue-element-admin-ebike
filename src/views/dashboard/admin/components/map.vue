@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import '@/utils/tmap.js'
+import { MP } from '@/utils/tmap.js'
 import { getCarType, getMarkers } from '@/api/dashboard'
 export default {
   name: 'Map',
@@ -22,9 +22,11 @@ export default {
   mounted() {
     const that = this
     this.getCarType()
-    setTimeout(function() {
-      that.init()
-    }, 2000)
+    MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
+      that.init(AMap)
+    }).catch(err => {
+      console.log(err)
+    })
   },
   methods: {
     async getCarType() {

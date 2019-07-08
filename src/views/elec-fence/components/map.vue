@@ -5,11 +5,11 @@
     <div class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
-      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'" style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
-      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'"  style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
-      <el-button class="btn " type="primary" plain v-show="drawType !== 'polyon'"  style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
-      <el-button class="btn" type="primary" v-show="drawType === 'polyon'" style="margin-bottom: 5px" @click="open()">开始编辑</el-button>
-      <el-button class="btn" type="primary" v-show="drawType === 'polyon'" @click="close()">结束编辑</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <el-button v-show="drawType === 'polyon'" class="btn" type="primary" style="margin-bottom: 5px" @click="open()">开始编辑</el-button>
+      <el-button v-show="drawType === 'polyon'" class="btn" type="primary" @click="close()">结束编辑</el-button>
       <el-select
         v-show="drawType !== 'polyon'"
         v-model="inptVal"
@@ -41,13 +41,15 @@
 
 <script>
 import { getCarType, getMarkers } from '@/api/dashboard'
-import '@/utils/tmap.js'
 import rMenu from '../../../utils/rMenu.js'
+import { MP } from '@/utils/tmap.js'
+
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
   data() {
     return {
+      errNetwork: false,
       inptVal: '',
       resOptions: [],
       imgUrl: '/static/img/local.ed3e6852.svg',
@@ -64,7 +66,8 @@ export default {
       mouseTool: null,
       autoComplete: null,
       myPolygon: [],
-      polyEditor: null
+      polyEditor: null,
+      mapLd: false
     }
   },
   watch: {
@@ -102,16 +105,68 @@ export default {
     }
   },
   mounted() {
-    // this.getCarType()
     const that = this
-    this.init()
-    setTimeout(function() {
+    this.$store.dispatch('tagsView/loadMapView', true)
+    MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
+      that.errNetwork = false
+      that.init(AMap)
+      console.log(that.polygons[0].drawzPolygon)
+
+      console.log(that.polygons)
+      console.log(that.drawType)
+      console.log('drawType')
+
       if (that.drawType === 'polyon') {
         that.editPolygon(that.polygons)
+      } else if (that.drawType === 'polygonsList') {
+        const viewList = []
+        for (let i = 0; i < that.polygons.length; i++) {
+          // that.editPolygon(that.polygons[i].drawzPolygon)
+          const polygons = that.polygons[i].drawzPolygon
+          for (const plgn in polygons) {
+            console.log(polygons[plgn])
+            var path = []
+            for (const plgn in polygons) {
+              console.log(polygons[plgn])
+              path.push([polygons[plgn].lng, polygons[plgn].lat])
+            }
+          }
+          var polygon = new AMap.Polygon({
+            path: path,
+            strokeColor: '#FF3300',
+            strokeWeight: 6,
+            strokeOpacity: 0.2,
+            fillOpacity: 0.4,
+            fillColor: '#1791fc',
+            zIndex: 50
+          })
+
+          viewList.push(polygon)
+        }
+        // 创建覆盖物群组，传入覆盖物组成的数组
+        var overlayGroup = new AMap.OverlayGroup(viewList)
+
+        // 对此覆盖物群组设置同一属性
+        overlayGroup.setOptions({
+          strokeColor: 'red',
+          strokeWeight: 5
+        })
+
+        // 统一添加到地图实例上
+        that.theMap.add(overlayGroup)
+        that.theMap.setFitView(viewList)
       } else {
         that.editRectangle(that.polygons)
       }
-    }, 2000)
+    }).catch(err => {
+      console.log(err)
+      that.errNetwork = true
+    })
+    console.log(this.$store.getters.roles)
+    console.log(this.$store.getters.loadMap)
+    // this.getCarType()
+    console.log(this.MapLoad)
+    this.mapLd = this.MapLoad
   },
   methods: {
     async getCarType() {
@@ -126,7 +181,7 @@ export default {
       console.log(this.thmarkers)
       this.loadMarkers(this.thmarkers)
     },
-    init() {
+    init(AMap) {
       const that = this
       var buildings = new AMap.Buildings({
         'zooms': [1, 18],
@@ -292,12 +347,12 @@ export default {
         // strokeDasharray: [30,10],
       })
     },
-    editPolygon() {
+    editPolygon(polygons) {
       const that = this
       var path = []
-      for (const plgn in this.polygons) {
-        console.log(this.polygons[plgn])
-        path.push([this.polygons[plgn].lng, this.polygons[plgn].lat])
+      for (const plgn in polygons) {
+        console.log(polygons[plgn])
+        path.push([polygons[plgn].lng, polygons[plgn].lat])
       }
 
       var polygon = new AMap.Polygon({
@@ -333,7 +388,7 @@ export default {
         // event.target 即为编辑后的多边形对象
         that.myPolygon = event.target.B.path
         that.$emit('drawChange', { myPolygon: event.target.B.path, drawType: 'polyon' })
-
+        that.myPolygon = []
         console.log(event.target.B.path)
       })
     },

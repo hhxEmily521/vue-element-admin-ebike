@@ -67,7 +67,7 @@
       <!--</el-table-column>-->
       <el-table-column label="车容比" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.totalBike" class="link-type" @click="handleFetchEbikeNum(row.hasBike)">{{ (typeof row.hasBike!='undefined'?row.hasBike:'0') +'/'+ row.totalBike }}</span>
+          <span v-if="row.totalBike" class="link-type" @click="handleFetchEbikeNum(row.id)">{{ (typeof row.hasBike!='undefined'?row.hasBike:'0') +'/'+ row.totalBike }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
@@ -92,7 +92,7 @@
           <!--草稿-->
           <!--</el-button>-->
           <!--v-if="row.status!='删除'"-->
-          <el-button size="mini" type="danger" @click="handleModifyStatus(row,'删除')">
+          <el-button size="mini" type="danger" @click="handleDelete(row,'删除')">
             删除
           </el-button>
         </template>
@@ -136,7 +136,7 @@
         <!--</el-form-item>-->
         <!--</el-row>-->
         <!---->
-        <fence-map :polygons="temp.drawzPolygon" :drawType="temp.drawType" :markers="markerList" :marker-idx="latLngIntActive" @drawChange="polygonChange" />
+        <fence-map :polygons="temp.drawzPolygon" v-if="dialogFormVisible" :draw-type="temp.drawType" :markers="markerList" :marker-idx="latLngIntActive" @drawChange="polygonChange" />
 
         <!--<el-form-item label="Imp">-->
         <!--<el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { fetchList, fetchEbikeNum, createFence, updateFence } from '@/api/fence'
+import { fetchList, fetchEbikeNum, createFence, updateFence, delFence } from '@/api/fence'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -226,7 +226,9 @@ export default {
         remark: '',
         timestamp: new Date(),
         title: '',
-        type: ''
+        type: '',
+        drawzPolygon: [],
+        drawType: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -247,6 +249,18 @@ export default {
       },
       downloadLoading: false
     }
+  },
+  watch: {
+    // dialogFormVisible() {
+    //   this.temp = {
+    //     id: undefined,
+    //     remark: '',
+    //     timestamp: new Date(),
+    //     title: '',
+    //     type: ''
+    //   }
+    // }
+
   },
   created() {
     this.getList()
@@ -324,12 +338,11 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
-        remark: '',
         timestamp: new Date(),
         title: '',
-        status: '草稿',
-        type: ''
+        type: '',
+        drawzPolygon: [],
+        drawType: ''
       }
     },
     handleCreate() {
@@ -392,17 +405,20 @@ export default {
       })
     },
     handleDelete(row) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      const that = this
+      delFence(row).then(response => {
+        that.$notify({
+          title: 'Success',
+          message: 'Delete Successfully',
+          type: 'success',
+          duration: 2000
+        })
+        const index = that.list.indexOf(row)
+        that.list.splice(index, 1)
       })
-      const index = this.list.indexOf(row)
-      this.list.splice(index, 1)
     },
-    handleFetchEbikeNum(num) {
-      fetchEbikeNum(num).then(response => {
+    handleFetchEbikeNum(id) {
+      fetchEbikeNum(id).then(response => {
         this.ebikeNumData = response.data.ebikeNumData
         this.dialogPvVisible = true
       })

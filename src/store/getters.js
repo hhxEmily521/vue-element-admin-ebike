@@ -3,6 +3,7 @@ const getters = {
   size: state => state.app.size,
   device: state => state.app.device,
   visitedViews: state => state.tagsView.visitedViews,
+  loadMap: state => state.tagsView.loadMap,
   cachedViews: state => state.tagsView.cachedViews,
   token: state => state.user.token,
   avatar: state => state.user.avatar,

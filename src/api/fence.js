@@ -16,11 +16,11 @@ export function fetchFence(id) {
   })
 }
 
-export function fetchEbikeNum(num) {
+export function fetchEbikeNum(id) {
   return request({
     url: '/fence/ebikeNum',
     method: 'get',
-    params: { num }
+    params: { id }
   })
 }
 
@@ -39,3 +39,18 @@ export function updateFence(data) {
     data
   })
 }
+export function delFence(data) {
+  return request({
+    url: '/fence/delFence',
+    method: 'post',
+    data
+  })
+}
+export function fetchPolyonList(query) {
+  return request({
+    url: '/fence/fetchPolyonList',
+    method: 'get',
+    params: query
+  })
+}
+

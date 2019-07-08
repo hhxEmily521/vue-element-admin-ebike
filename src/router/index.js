@@ -190,6 +190,14 @@ export const asyncRoutes = [
           title: '电子围栏列表',
           roles: ['admin'] // or you can only set roles in sub nav
         }
+      },{
+        path: 'fence-map',
+        component: () => import('@/views/elec-fence/fence-map'),
+        name: 'elecFenceMap',
+        meta: {
+          title: '电子围栏地图',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
       }
     ]
   },

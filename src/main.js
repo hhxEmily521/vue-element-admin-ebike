@@ -19,6 +19,8 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+var MapLoad = false
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -42,6 +44,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+Vue.prototype.MapLoad = MapLoad
 
 new Vue({
   el: '#app',

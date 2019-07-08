@@ -30,7 +30,25 @@ for (let i = 0; i < count; i++) {
     platforms: ['a-platform']
   }))
 }
+const polyonList = []
 
+for (let i = 0; i < count; i++) {
+  const divBy = Math.random() * 100
+  const addnum = i / divBy
+  console.log(addnum)
+  const list = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211855 + i, 'lat': (29.297727 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.211799 + addnum, 'lat': 29.297708 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
+  const list2 = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211555 + i, 'lat': (29.2977297 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.218799 + addnum, 'lat': 29.297798 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
+
+  polyonList.push(Mock.mock({
+    id: '@increment',
+    timestamp: +Mock.Random.date('T'),
+    address: '@region@province@city@county',
+    hasBike: '@integer(20, 500)',
+    totalBike: '@integer(400, 550)',
+    drawzPolygon: i % 2 === 0 ? list2 : list,
+    drawType: 'polyon'
+  }))
+}
 export default [
   {
     url: '/fence/list',
@@ -113,6 +131,42 @@ export default [
       return {
         code: 20000,
         data: 'success'
+      }
+    }
+  }, {
+    url: '/fence/delFence',
+    type: 'post',
+    response: _ => {
+      return {
+        code: 20000,
+        data: 'success'
+      }
+    }
+  },
+  // fetchPolyonList
+  {
+    url: '/fence/fetchPolyonList',
+    type: 'get',
+    response: config => {
+      const { id, type, title } = config.query
+
+      const mockList = List.filter(item => {
+        if (id && item.id.indexOf(id) < 0) return false
+        if (type && item.type !== type) return false
+        if (title && item.title.indexOf(title) < 0) return false
+        return true
+      })
+      const randMax = Math.random() * 18
+      const randMin = Math.random() * 5
+
+      const pageList = mockList.filter((item, index) => index < randMax && index > randMin)
+
+      return {
+        code: 20000,
+        data: {
+          total: mockList.length,
+          items: pageList
+        }
       }
     }
   }
