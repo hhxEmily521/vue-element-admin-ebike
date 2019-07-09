@@ -30,22 +30,27 @@ for (let i = 0; i < count; i++) {
     platforms: ['a-platform']
   }))
 }
-const polyonList = []
-
+let polyonList = []
+let lng1 = 0
+let addnum =0
+let list =[]
 for (let i = 0; i < count; i++) {
-  const divBy = Math.random() * 100
-  const addnum = i / divBy
-  console.log(addnum)
-  const list = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211855 + i, 'lat': (29.297727 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.211799 + addnum, 'lat': 29.297708 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
-  const list2 = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211555 + i, 'lat': (29.2977297 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.218799 + addnum, 'lat': 29.297798 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
+  let divBy = Math.random() * 1000000
+  addnum = (i+ 1) / 10000
+  // console.log(addnum)
+  lng1 =(117.211855 + addnum)
+  console.log(lng1)
+  list = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': lng1, 'lat': (29.297727 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.211799 + addnum, 'lat': 29.297708 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
+  let list2 = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211555 + i, 'lat': (29.2977297 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.218799 + addnum, 'lat': 29.297798 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
 
+  list.push({ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': lng1, 'lat': (29.297727 + addnum) })
   polyonList.push(Mock.mock({
     id: '@increment',
     timestamp: +Mock.Random.date('T'),
     address: '@region@province@city@county',
     hasBike: '@integer(20, 500)',
     totalBike: '@integer(400, 550)',
-    drawzPolygon: i % 2 === 0 ? list2 : list,
+    drawzPolygon: list,
     drawType: 'polyon'
   }))
 }

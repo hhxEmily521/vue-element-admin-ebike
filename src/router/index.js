@@ -200,6 +200,28 @@ export const asyncRoutes = [
         }
       }
     ]
+  },  {
+    path: '/elecbike',
+    component: Layout,
+    redirect: '/elec-bike/bike-table',
+    alwaysShow: true, // will always show the root menu
+    name: 'elecBike',
+    meta: {
+      title: '车辆',
+      icon: 'lock',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'elecBike',
+        component: () => import('@/views/elec-bike/bike-table'),
+        name: 'elecBikeTable',
+        meta: {
+          title: '车辆列表',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
   },
   {
     path: '/icon',

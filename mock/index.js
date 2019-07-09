@@ -7,6 +7,7 @@ import article from './article'
 import search from './remote-search'
 import dashboard from './dashboard'
 import fence from './fence'
+import bike from './bike'
 
 const mocks = [
   ...user,
@@ -14,7 +15,8 @@ const mocks = [
   ...article,
   ...search,
   ...dashboard,
-  ...fence
+  ...fence,
+  ...bike
 ]
 
 // for front mock

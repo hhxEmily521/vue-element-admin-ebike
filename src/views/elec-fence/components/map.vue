@@ -2,7 +2,7 @@
   <div>
     <div id="container" />
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
-    <div class="input-card " style="width: 200px">
+    <div class="input-card " style="width: 200px"  v-show="drawType == 'polyon'||drawType == 'rectangle'">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
       <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
@@ -110,12 +110,6 @@ export default {
     MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
       that.errNetwork = false
       that.init(AMap)
-      console.log(that.polygons[0].drawzPolygon)
-
-      console.log(that.polygons)
-      console.log(that.drawType)
-      console.log('drawType')
-
       if (that.drawType === 'polyon') {
         that.editPolygon(that.polygons)
       } else if (that.drawType === 'polygonsList') {
@@ -123,11 +117,12 @@ export default {
         for (let i = 0; i < that.polygons.length; i++) {
           // that.editPolygon(that.polygons[i].drawzPolygon)
           const polygons = that.polygons[i].drawzPolygon
+          console.log(polygons[0].lng)
+
           for (const plgn in polygons) {
-            console.log(polygons[plgn])
             var path = []
             for (const plgn in polygons) {
-              console.log(polygons[plgn])
+              // console.log(polygons[plgn])
               path.push([polygons[plgn].lng, polygons[plgn].lat])
             }
           }
