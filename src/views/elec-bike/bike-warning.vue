@@ -10,20 +10,20 @@
         <el-option v-for="item in isMovingOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <!--<el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-        <!--<el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <!--<el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
       <!--</el-select>-->
-        <el-date-picker
-          class="filter-item"
-          style="width: 300px"
-          v-model="listQuery.duringDay"
-          type="daterange"
-          align="right"
-          unlink-panels
-          range-separator="-"
-          start-placeholder="车辆创建时间"
-          end-placeholder="车辆结束时间"
-          :picker-options="pickerOptions">
-        </el-date-picker>
+      <el-date-picker
+        class="filter-item"
+        style="width: 300px"
+        v-model="listQuery.duringDay"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="-"
+        start-placeholder="车辆创建时间"
+        end-placeholder="车辆结束时间"
+        :picker-options="pickerOptions">
+      </el-date-picker>
       <el-select v-model="listQuery.useType" placeholder="业务状态" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
@@ -51,11 +51,11 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-        <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="80">
-          <template slot-scope="scope">
-            <span>{{ scope.row.id }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="车辆IMEI" prop="IMEI" sortable="custom" align="center" width="110">
         <template slot-scope="scope">
           <span>{{ scope.row.IMEI }}</span>
@@ -88,10 +88,10 @@
         </template>
       </el-table-column>
       <!--<el-table-column label="Readings" align="center" width="95">-->
-        <!--<template slot-scope="{row}">-->
-          <!--<span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
-          <!--<span v-else>0</span>-->
-        <!--</template>-->
+      <!--<template slot-scope="{row}">-->
+      <!--<span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
+      <!--<span v-else>0</span>-->
+      <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column label="创建时间" width="150px" align="center">
         <template slot-scope="scope">
@@ -124,43 +124,43 @@
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
-        <el-form-item label="创建时间" label-position="left" label-width="100px" prop="creatTime">
-          <el-date-picker v-model="temp.createTime" :disabled="true" type="datetime" placeholder="创建时间" />
-        </el-form-item>
+          <el-form-item label="创建时间" label-position="left" label-width="100px" prop="creatTime">
+            <el-date-picker v-model="temp.createTime" :disabled="true" type="datetime" placeholder="创建时间" />
+          </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-        <el-form-item label="车辆IMEI"  prop="title" >
-          <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
-        <el-form-item label="修改时间" prop="updateTime">
-          <el-date-picker v-model="temp.updateTime" :disabled="true" type="datetime" placeholder="修改时间" />
-        </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
-        <el-form-item label="车辆编号" prop="id">
-          <el-input v-model="temp.id" :disabled="true" />
-        </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
-        <el-form-item label="业务状态">
-          <el-select v-model="temp.useType" placeholder="业务状态"  class="filter-item" >
-            <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" :disabled="true" />
-          </el-select>
+          <el-form-item label="车辆IMEI"  prop="title" >
+            <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
-        <el-form-item label="车辆状态" prop="bikeType">
-          <el-select v-model="temp.bikeType" placeholder="车辆状态"  class="filter-item" >
-            <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"  />
-          </el-select>
-        </el-form-item>
+          <el-form-item label="修改时间" prop="updateTime">
+            <el-date-picker v-model="temp.updateTime" :disabled="true" type="datetime" placeholder="修改时间" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
+          <el-form-item label="车辆编号" prop="id">
+            <el-input v-model="temp.id" :disabled="true" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
+          <el-form-item label="业务状态">
+            <el-select v-model="temp.useType" placeholder="业务状态"  class="filter-item" >
+              <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" :disabled="true" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'">
+          <el-form-item label="车辆状态" prop="bikeType">
+            <el-select v-model="temp.bikeType" placeholder="车辆状态"  class="filter-item" >
+              <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"  />
+            </el-select>
+          </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox"  v-if="dialogStatus==='update'" >
-        <el-form-item label="最后会员"  >
-          <el-input v-model="temp.lastUserId"  :disabled="true" />
-        </el-form-item>
+          <el-form-item label="最后会员"  >
+            <el-input v-model="temp.lastUserId"  :disabled="true" />
+          </el-form-item>
         </el-col>
       </el-form>
       <!--<el-col :xs="24" :sm="24" :lg="24" class="editBox">-->
@@ -173,7 +173,7 @@
         </el-button>
       </div>
       <!--</el-col>-->
-<div></div>
+      <div></div>
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
@@ -189,7 +189,7 @@
 </template>
 
 <script>
-  import { fetchList, fetchPv, createBike, updateBike } from '@/api/bike'
+  import { fetchWarningList, fetchPv, createBike, updateBike } from '@/api/bike'
   import waves from '@/directive/waves' // waves directive
   import { parseTime } from '@/utils'
   import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -341,7 +341,7 @@
       },
       getList() {
         this.listLoading = true
-        fetchList(this.listQuery).then(response => {
+        fetchWarningList(this.listQuery).then(response => {
           this.list = response.data.items
           this.total = response.data.total
 
@@ -491,8 +491,8 @@
   }
 </script>
 <style>
- .my-dialog .el-dialog{
+  .my-dialog .el-dialog{
     margin:10vw 10vw !important;
-   width: 80%;
+    width: 80%;
   }
 </style>

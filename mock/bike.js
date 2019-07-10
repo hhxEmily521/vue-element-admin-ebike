@@ -2,6 +2,8 @@ import Mock from 'mockjs'
 
 const List = []
 const count = 100
+const monitorList =[]
+const warningList =[]
 
 const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
 const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
@@ -9,27 +11,69 @@ const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    timestamp: +Mock.Random.date('T'),
-    author: '@first',
-    reviewer: '@first',
-    title: '@title(5, 10)',
-    content_short: 'mock data',
-    content: baseContent,
-    forecast: '@float(0, 100, 2, 2)',
-    importance: '@integer(1, 3)',
-    'type|1': ['CN', 'US', 'JP', 'EU'],
-    'status|1': ['published', 'draft', 'deleted'],
+    IMEI: 'IMEI' + '@increment',
+    bikeName: '车名' +'@title(1, 1)',
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    'useType|1': ['using', 'notUse'],
+    'isMoving|1': ['isMoving', 'notMove'], // 以后可能有临时锁车其他状态
+    lastUserId:'u'+ '@integer(1000, 5000)',
+    lastUserPhone:'@integer(13000000000, 18000000000)',
+    createTime: +Mock.Random.date('T'),
+    updateTime: +Mock.Random.date('T'),
     display_time: '@datetime',
-    comment_disabled: true,
     pageviews: '@integer(300, 5000)',
-    image_uri,
-    platforms: ['a-platform']
+  }))
+}
+for (let i = 0; i < count; i++) {
+  let addnum = 0
+  const divBy = Math.random()
+  addnum = divBy / Math.random()*20
+  monitorList.push(Mock.mock({
+    id: '@increment',
+    batteryQuantity:'@integer(10, 100)',
+    canRunKM:'@integer(5, 20)',
+    needNewBattery:Mock.Random.boolean(),
+    IMEI: 'IMEI' + '@increment',
+    bikeName: '车名' +'@title(1, 1)',
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    'useType|1': ['using', 'notUse'],
+    'isMoving|1': ['isMoving', 'notMove'], // 以后可能有临时锁车其他状态
+    createTime: +Mock.Random.date('T'),
+    updateTime: +Mock.Random.date('T'),
+    changeBatteryTime:+Mock.Random.date('T'),
+    display_time: '@datetime',
+    pageviews: '@integer(300, 5000)',
+    lngLat:{'lng': 117.211855+ addnum, 'lat': 29.297727+ addnum },
+    polyLine: [
+      [116.362209+ addnum+Math.random()/22, 39.887487+ addnum+Math.random()/20],
+      [116.422897+ addnum+Math.random()/18, 39.878002+ addnum+Math.random()/19],
+      [116.372105+ addnum+Math.random()/22, 39.90651+ addnum+Math.random()/20],
+      [116.379105+ addnum+Math.random()/22, 39.97651+ addnum+Math.random()/20],
+      [116.428945+ addnum+Math.random()/16, 39.89663+ addnum+Math.random()/26]
+    ]
+  }))
+}
+for (let i = 0; i < count; i++) {
+  warningList.push(Mock.mock({
+    id: '@increment',
+    batteryQuantity:'@integer(10, 100)',
+    canRunKM:'@integer(5, 20)',
+    isDeal:Mock.Random.boolean(),
+    IMEI: 'IMEI' + '@increment',
+    bikeName: '车名' +'@title(1, 1)',
+    'warningType|1': ['noElectric', 'illegalMove', 'outOfFence', 'lost'],
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    'useType|1': ['using', 'notUse'],
+    'isMoving|1': ['isMoving', 'notMove'],
+    createTime: +Mock.Random.date('T'),
+    updateTime: +Mock.Random.date('T'),
+    pageviews: '@integer(300, 5000)',
   }))
 }
 
 export default [
   {
-    url: '/article/list',
+    url: '/bike/list',
     type: 'get',
     response: config => {
       const { importance, type, title, page = 1, limit = 20, sort } = config.query
@@ -58,22 +102,22 @@ export default [
   },
 
   {
-    url: '/article/detail',
+    url: '/bike/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
-      for (const article of List) {
-        if (article.id === +id) {
+      for (const bike of List) {
+        if (bike.id === +id) {
           return {
             code: 20000,
-            data: article
+            data: bike
           }
         }
       }
     }
   },
   {
-    url: '/article/pv',
+    url: '/bike/pv',
     type: 'get',
     response: _ => {
       return {
@@ -91,7 +135,7 @@ export default [
   },
 
   {
-    url: '/article/create',
+    url: '/bike/create',
     type: 'post',
     response: _ => {
       return {
@@ -102,12 +146,63 @@ export default [
   },
 
   {
-    url: '/article/update',
+    url: '/bike/update',
     type: 'post',
     response: _ => {
       return {
         code: 20000,
         data: 'success'
+      }
+    }
+  },
+  {
+    url: '/bike/monitorList',
+    type: 'get',
+    response: config => {
+      const { id, type, title } = config.query
+
+      const mockList = monitorList.filter(item => {
+        if (id && item.id.indexOf(id) < 0) return false
+        if (type && item.type !== type) return false
+        if (title && item.title.indexOf(title) < 0) return false
+        return true
+      })
+      const randMax = Math.random() * 18
+      const randMin = Math.random() * 5
+
+      const pageList = mockList.filter((item, index) => index < randMax && index > randMin)
+
+      return {
+        code: 20000,
+        data: {
+          total: mockList.length,
+          items: pageList
+        }
+      }
+    }
+  },
+  {
+    url: '/fence/warningList',
+    type: 'get',
+    response: config => {
+      const { id, type, title } = config.query
+      const mockList = warningList.filter(item => {
+        if (id && item.id.indexOf(id) < 0) return false
+        if (type && item.type !== type) return false
+        if (title && item.title.indexOf(title) < 0) return false
+        return true
+      })
+      const randMax = Math.random() * 18
+      const randMin = Math.random() * 5
+
+      const pageList = mockList.filter((item, index) => index < randMax && index > randMin)
+
+      return {
+        code: 20000,
+        data: {
+          total: mockList.length,
+          items: pageList
+        }
       }
     }
   }

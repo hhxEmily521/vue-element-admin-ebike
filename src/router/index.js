@@ -220,7 +220,40 @@ export const asyncRoutes = [
           title: '车辆列表',
           roles: ['admin'] // or you can only set roles in sub nav
         }
+      },{
+        path: 'bikeMonitor',
+        component: () => import('@/views/elec-bike/bike-monitor'),
+        name: 'bikeMonitor',
+        meta: {
+          title: '车辆监控',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },{
+        path: 'bikeWarning',
+        component: () => import('@/views/elec-bike/bike-warning'),
+        name: 'bikeWarning',
+        meta: {
+          title: '车辆报警',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },{
+        path: 'bikeLocation',
+        component: () => import('@/views/elec-bike/bike-location'),
+        name: 'bikeLocation',
+        meta: {
+          title: '车辆位置',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },{
+        path: 'bikeLine',
+        component: () => import('@/views/elec-bike/bike-line'),
+        name: 'bikeLine',
+        meta: {
+          title: '车辆追踪',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
       }
+
     ]
   },
   {
