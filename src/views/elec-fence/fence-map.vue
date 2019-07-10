@@ -10,7 +10,7 @@
         搜索
       </el-button>
     </div>
-    <fence-map :polygons="list"  :draw-type="'polygonsList'" :markers="markerList"  @drawChange="polygonChange" />
+    <fence-map :polygons="list" :draw-type="'polygonsList'" :markers="markerList" @drawChange="polygonChange" />
 
   </div>
 </template>
@@ -78,6 +78,7 @@ export default {
       this.listLoading = true
       fetchPolyonList(this.listQuery).then(response => {
         this.list = response.data.items
+        this.$store.dispatch('map/setPolygonList', this.list)
         this.total = response.data.total
         console.log(this.list)
         // Just to simulate the time of the request

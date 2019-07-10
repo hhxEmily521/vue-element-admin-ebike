@@ -136,7 +136,7 @@
         <!--</el-form-item>-->
         <!--</el-row>-->
         <!---->
-        <fence-map :polygons="temp.drawzPolygon" v-if="dialogFormVisible" :draw-type="temp.drawType" :markers="markerList" :marker-idx="latLngIntActive" @drawChange="polygonChange" />
+        <fence-map v-if="dialogFormVisible" :polygons="temp.drawzPolygon" :draw-type="temp.drawType" :markers="markerList" :marker-idx="latLngIntActive" @drawChange="polygonChange" />
 
         <!--<el-form-item label="Imp">-->
         <!--<el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
@@ -247,7 +247,8 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      editedPlygn: null
     }
   },
   watch: {
@@ -271,8 +272,7 @@ export default {
       this.$set(this.markerList, this.latLngIntActive, { lat: lat, lng: lng })
     },
     polygonChange(plgn) {
-      this.temp.drawzPolygon = plgn.myPolygon
-      this.temp.drawType = plgn.drawType
+      this.editedPlygn = plgn
     },
     inptFocus(index) {
       this.latLngIntActive = index
@@ -383,11 +383,14 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.drawzPolygon = this.editedPlygn.myPolygon
+          this.temp.drawType = this.editedPlygn.drawType
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateFence(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
+                debugger
                 const index = this.list.indexOf(v)
                 this.list.splice(index, 1, this.temp)
                 break

@@ -30,20 +30,15 @@ for (let i = 0; i < count; i++) {
     platforms: ['a-platform']
   }))
 }
-let polyonList = []
-let lng1 = 0
-let addnum =0
-let list =[]
-for (let i = 0; i < count; i++) {
-  let divBy = Math.random() * 1000000
-  addnum = (i+ 1) / 10000
-  // console.log(addnum)
-  lng1 =(117.211855 + addnum)
-  console.log(lng1)
-  list = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': lng1, 'lat': (29.297727 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.211799 + addnum, 'lat': 29.297708 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
-  let list2 = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211555 + i, 'lat': (29.2977297 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.218799 + addnum, 'lat': 29.297798 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
 
-  list.push({ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': lng1, 'lat': (29.297727 + addnum) })
+let list = []
+const polyonList = []
+
+for (let i = 0; i < count; i++) {
+  let addnum = 0
+  const divBy = Math.random()
+  addnum = divBy / 16
+  list = [{ 'P': (29.297727272494765 + addnum), 'Q': 117.21185454457998 + addnum, 'lng': 117.211855 + addnum, 'lat': (29.297727 + addnum) }, { 'P': 29.297708325587536 + addnum, 'Q': 117.21179926961662 + addnum, 'lng': 117.211799 + addnum, 'lat': 29.297708 + addnum }, { 'P': 29.29767174050324 + addnum, 'Q': 117.21169253915548 + addnum, 'lng': 117.211693 + addnum, 'lat': 29.297672 + addnum }, { 'P': 29.296882435842242 + addnum, 'Q': 117.21203297719359 + addnum, 'lng': 117.212033 + addnum, 'lat': 29.296882 + addnum }, { 'P': 29.296923905339067 + addnum, 'Q': 117.21222804889084 + addnum, 'lng': 117.212228 + addnum, 'lat': 29.296924 + addnum }]
   polyonList.push(Mock.mock({
     id: '@increment',
     timestamp: +Mock.Random.date('T'),
@@ -155,7 +150,7 @@ export default [
     response: config => {
       const { id, type, title } = config.query
 
-      const mockList = List.filter(item => {
+      const mockList = polyonList.filter(item => {
         if (id && item.id.indexOf(id) < 0) return false
         if (type && item.type !== type) return false
         if (title && item.title.indexOf(title) < 0) return false

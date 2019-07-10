@@ -2,7 +2,7 @@
   <div>
     <div id="container" />
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
-    <div class="input-card " style="width: 200px"  v-show="drawType == 'polyon'||drawType == 'rectangle'">
+    <div v-show="drawType == 'polyon'||drawType == 'rectangle'" class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
       <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
@@ -43,10 +43,16 @@
 import { getCarType, getMarkers } from '@/api/dashboard'
 import rMenu from '../../../utils/rMenu.js'
 import { MP } from '@/utils/tmap.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
+  computed: {
+    ...mapGetters([
+      'polygonList'
+    ])
+  },
   data() {
     return {
       errNetwork: false,
@@ -67,12 +73,17 @@ export default {
       autoComplete: null,
       myPolygon: [],
       polyEditor: null,
-      mapLd: false
+      mapLd: false,
+      editedPlygn:null
     }
   },
   watch: {
+    polygonList() {
+      this.removeAllOverlay()
+      this.showPolygons()
+    },
     myPolygon(val) {
-      this.$emit('drawChange', { myPolygon: val, drawType: this.drawType })
+      // this.$emit('drawChange', { myPolygon: val, drawType: this.drawType })
     },
     inptVal(val) {
       if (!val) {
@@ -106,50 +117,13 @@ export default {
   },
   mounted() {
     const that = this
-    this.$store.dispatch('tagsView/loadMapView', true)
     MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
       that.errNetwork = false
       that.init(AMap)
       if (that.drawType === 'polyon') {
         that.editPolygon(that.polygons)
       } else if (that.drawType === 'polygonsList') {
-        const viewList = []
-        for (let i = 0; i < that.polygons.length; i++) {
-          // that.editPolygon(that.polygons[i].drawzPolygon)
-          const polygons = that.polygons[i].drawzPolygon
-          console.log(polygons[0].lng)
-
-          for (const plgn in polygons) {
-            var path = []
-            for (const plgn in polygons) {
-              // console.log(polygons[plgn])
-              path.push([polygons[plgn].lng, polygons[plgn].lat])
-            }
-          }
-          var polygon = new AMap.Polygon({
-            path: path,
-            strokeColor: '#FF3300',
-            strokeWeight: 6,
-            strokeOpacity: 0.2,
-            fillOpacity: 0.4,
-            fillColor: '#1791fc',
-            zIndex: 50
-          })
-
-          viewList.push(polygon)
-        }
-        // 创建覆盖物群组，传入覆盖物组成的数组
-        var overlayGroup = new AMap.OverlayGroup(viewList)
-
-        // 对此覆盖物群组设置同一属性
-        overlayGroup.setOptions({
-          strokeColor: 'red',
-          strokeWeight: 5
-        })
-
-        // 统一添加到地图实例上
-        that.theMap.add(overlayGroup)
-        that.theMap.setFitView(viewList)
+        that.showPolygons()
       } else {
         that.editRectangle(that.polygons)
       }
@@ -157,11 +131,6 @@ export default {
       console.log(err)
       that.errNetwork = true
     })
-    console.log(this.$store.getters.roles)
-    console.log(this.$store.getters.loadMap)
-    // this.getCarType()
-    console.log(this.MapLoad)
-    this.mapLd = this.MapLoad
   },
   methods: {
     async getCarType() {
@@ -255,6 +224,40 @@ export default {
             ',' + event.lnglat.getLat() + ']')
         }
       )
+    },
+    showPolygons() {
+      const that = this
+      const viewList = []
+      for (let i = 0; i < that.polygonList.length; i++) {
+        const polygons = that.polygonList[i].drawzPolygon
+        var path = []
+        for (const plgn in polygons) {
+          path.push([polygons[plgn].lng, polygons[plgn].lat])
+        }
+        var polygon = new AMap.Polygon({
+          path: path,
+          strokeColor: '#FF3300',
+          strokeWeight: 6,
+          strokeOpacity: 0.8,
+          fillOpacity: 0.4,
+          fillColor: '#1791fc',
+          zIndex: 50
+        })
+
+        viewList.push(polygon)
+      }
+      // 创建覆盖物群组，传入覆盖物组成的数组
+      var overlayGroup = new AMap.OverlayGroup(viewList)
+
+      // 对此覆盖物群组设置同一属性
+      overlayGroup.setOptions({
+        strokeColor: 'red',
+        strokeWeight: 5
+      })
+
+      // 统一添加到地图实例上
+      that.theMap.add(overlayGroup)
+      that.theMap.setFitView(viewList)
     },
     selectTrigger(data) {
       const Latlng = data.split('_')
@@ -382,7 +385,8 @@ export default {
         console.log('触发事件： end')
         // event.target 即为编辑后的多边形对象
         that.myPolygon = event.target.B.path
-        that.$emit('drawChange', { myPolygon: event.target.B.path, drawType: 'polyon' })
+        that.editedPlygn = { myPolygon: event.target.B.path, drawType: 'polyon' }
+        that.$emit('drawChange', that.editedPlygn)
         that.myPolygon = []
         console.log(event.target.B.path)
       })
