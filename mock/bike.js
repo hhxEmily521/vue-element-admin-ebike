@@ -2,8 +2,8 @@ import Mock from 'mockjs'
 
 const List = []
 const count = 100
-const monitorList =[]
-const warningList =[]
+const monitorList = []
+const warningList = []
 
 const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
 const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
@@ -12,62 +12,62 @@ for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
     IMEI: 'IMEI' + '@increment',
-    bikeName: '车名' +'@title(1, 1)',
-    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    bikeName: '车名' + '@title(1, 1)',
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem', 'checking'],
     'useType|1': ['using', 'notUse'],
     'isMoving|1': ['isMoving', 'notMove'], // 以后可能有临时锁车其他状态
-    lastUserId:'u'+ '@integer(1000, 5000)',
-    lastUserPhone:'@integer(13000000000, 18000000000)',
+    lastUserId: 'u' + '@integer(1000, 5000)',
+    lastUserPhone: '@integer(13000000000, 18000000000)',
     createTime: +Mock.Random.date('T'),
     updateTime: +Mock.Random.date('T'),
     display_time: '@datetime',
-    pageviews: '@integer(300, 5000)',
+    pageviews: '@integer(300, 5000)'
   }))
 }
 for (let i = 0; i < count; i++) {
   let addnum = 0
   const divBy = Math.random()
-  addnum = divBy / Math.random()*20
+  addnum = divBy / Math.random() * 20
   monitorList.push(Mock.mock({
     id: '@increment',
-    batteryQuantity:'@integer(10, 100)',
-    canRunKM:'@integer(5, 20)',
-    needNewBattery:Mock.Random.boolean(),
+    batteryQuantity: '@integer(10, 100)',
+    canRunKM: '@integer(5, 20)',
+    needNewBattery: Mock.Random.boolean(),
     IMEI: 'IMEI' + '@increment',
-    bikeName: '车名' +'@title(1, 1)',
-    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    bikeName: '车名' + '@title(1, 1)',
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem', 'checking'],
     'useType|1': ['using', 'notUse'],
     'isMoving|1': ['isMoving', 'notMove'], // 以后可能有临时锁车其他状态
     createTime: +Mock.Random.date('T'),
     updateTime: +Mock.Random.date('T'),
-    changeBatteryTime:+Mock.Random.date('T'),
+    changeBatteryTime: +Mock.Random.date('T'),
     display_time: '@datetime',
     pageviews: '@integer(300, 5000)',
-    lngLat:{'lng': 117.211855+ addnum, 'lat': 29.297727+ addnum },
+    lngLat: { 'lng': 117.211855 + addnum, 'lat': 29.297727 + addnum },
     polyLine: [
-      [116.362209+ addnum+Math.random()/22, 39.887487+ addnum+Math.random()/20],
-      [116.422897+ addnum+Math.random()/18, 39.878002+ addnum+Math.random()/19],
-      [116.372105+ addnum+Math.random()/22, 39.90651+ addnum+Math.random()/20],
-      [116.379105+ addnum+Math.random()/22, 39.97651+ addnum+Math.random()/20],
-      [116.428945+ addnum+Math.random()/16, 39.89663+ addnum+Math.random()/26]
+      [116.362209 + addnum + Math.random() / 22, 39.887487 + addnum + Math.random() / 20],
+      [116.422897 + addnum + Math.random() / 18, 39.878002 + addnum + Math.random() / 19],
+      [116.372105 + addnum + Math.random() / 22, 39.90651 + addnum + Math.random() / 20],
+      [116.379105 + addnum + Math.random() / 22, 39.97651 + addnum + Math.random() / 20],
+      [116.428945 + addnum + Math.random() / 16, 39.89663 + addnum + Math.random() / 26]
     ]
   }))
 }
 for (let i = 0; i < count; i++) {
   warningList.push(Mock.mock({
     id: '@increment',
-    batteryQuantity:'@integer(10, 100)',
-    canRunKM:'@integer(5, 20)',
-    isDeal:Mock.Random.boolean(),
+    batteryQuantity: '@integer(10, 100)',
+    canRunKM: '@integer(5, 20)',
+    isDeal: Mock.Random.boolean(),
     IMEI: 'IMEI' + '@increment',
-    bikeName: '车名' +'@title(1, 1)',
+    bikeName: '车名' + '@title(1, 1)',
     'warningType|1': ['noElectric', 'illegalMove', 'outOfFence', 'lost'],
-    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem','checking'],
+    'bikeType|1': ['noElectric', 'worthless', 'normal', 'problem', 'checking'],
     'useType|1': ['using', 'notUse'],
     'isMoving|1': ['isMoving', 'notMove'],
     createTime: +Mock.Random.date('T'),
     updateTime: +Mock.Random.date('T'),
-    pageviews: '@integer(300, 5000)',
+    pageviews: '@integer(300, 5000)'
   }))
 }
 
@@ -182,7 +182,7 @@ export default [
     }
   },
   {
-    url: '/fence/warningList',
+    url: '/bike/warningList',
     type: 'get',
     response: config => {
       const { id, type, title } = config.query
