@@ -12,7 +12,9 @@ const getters = {
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs,
-  polygonList: state => state.map.polygonList
+  polygonList: state => state.map.polygonList,
+  polylineList: state => state.map.polylineList,
+  markerList: state => state.map.markerList
 
 }
 export default getters

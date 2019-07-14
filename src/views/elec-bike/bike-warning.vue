@@ -4,7 +4,7 @@
       <el-input v-model="listQuery.id" placeholder="车辆编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.bikeName" placeholder="车辆名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.IMEI" placeholder="硬件IMEI" style="width: 240px;" class="filter-item" @keyup.enter.native="handleFilter" />
-     <el-select v-model="listQuery.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-select v-model="listQuery.warningType" placeholder="报警类型" clearable class="filter-item" style="width: 130px">
@@ -32,7 +32,7 @@
       </el-table-column>
       <el-table-column label="车辆名称" min-width="150px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
+          <span>{{ row.bikeName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否处理" min-width="80px">
@@ -68,7 +68,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="lookLocation(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
             更改状态
           </el-button>
           <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->
@@ -82,51 +82,13 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" >
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆名称" prop="bikeName">
-            <el-input v-model="temp.bikeName" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="创建时间" label-position="left" label-width="100px" prop="creatTime">
-            <el-date-picker v-model="temp.createTime" :disabled="true" type="datetime" placeholder="创建时间" />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆IMEI" prop="title">
-            <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="修改时间" prop="updateTime">
-            <el-date-picker v-model="temp.updateTime" :disabled="true" type="datetime" placeholder="修改时间" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆编号" prop="id">
-            <el-input v-model="temp.id" :disabled="true" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="业务状态">
-            <el-select v-model="temp.useType" placeholder="业务状态" class="filter-item">
-              <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" :disabled="true" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆状态" prop="bikeType">
-            <el-select v-model="temp.bikeType" placeholder="车辆状态" class="filter-item">
-              <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="最后会员">
-            <el-input v-model="temp.lastUserId" :disabled="true" />
-          </el-form-item>
+        <el-col  :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="是否处理">
+            <el-select v-model="temp.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+              <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+            </el-select>          </el-form-item>
         </el-col>
       </el-form>
       <!--<el-col :xs="24" :sm="24" :lg="24" class="editBox">-->
@@ -143,10 +105,9 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
+      <el-select v-model="temp.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
@@ -155,7 +116,8 @@
 </template>
 
 <script>
-import { fetchWarningList, fetchPv, createBike, updateBike } from '@/api/bike'
+import { fetchWarningList, createBike, updateBike } from '@/api/bike'
+import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -220,7 +182,7 @@ const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, fenceMap },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -336,7 +298,8 @@ export default {
     this.getList()
   },
   methods: {
-    lookLocation() {
+    changeType() {
+      this.dialogFormVisible = true
 
     },
     handleCopy(text, event) {
@@ -420,7 +383,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.updateTime = new Date()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -431,7 +393,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateBike(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
@@ -461,11 +422,8 @@ export default {
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
+    handleLocation(pv) {
+      this.dialogPvVisible = true
     },
     handleDownload() {
       this.downloadLoading = true

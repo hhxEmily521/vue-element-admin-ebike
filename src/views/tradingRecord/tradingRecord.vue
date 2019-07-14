@@ -1,24 +1,28 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.id" placeholder="车辆编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.bikeName" placeholder="车辆名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.IMEI" placeholder="硬件IMEI" style="width: 240px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.bikeType" placeholder="车辆状态" clearable class="filter-item" style="width: 150px">
-        <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-input v-model="listQuery.id" placeholder="交易id" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.acceptAccount" placeholder="收款账号" style="width: 280px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.payAccount" placeholder="付款账号" style="width: 250px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.transactionId" placeholder="交易流水" style="width: 250px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.transactionType" placeholder="交易类型" clearable class="filter-item" style="width: 180px">
+        <el-option v-for="item in transactionTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.useType" placeholder="业务状态" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <el-input v-model.number="listQuery.minvoltage" placeholder="最小电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model.number="listQuery.maxvoltage" placeholder="最大电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-
-      <el-select v-model="listQuery.isMoving" placeholder="是否移动中" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in isMovingOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.needNewBattery" placeholder="待换电池" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in needNewBatteryOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
+      <!--<el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
+      <!--<el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <!--</el-select>-->
+      <el-date-picker
+        v-model="listQuery.duringDay"
+        class="filter-item"
+        style="width: 320px"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="-"
+        start-placeholder="支付时间开始"
+        end-placeholder="支付时间结束"
+        :picker-options="pickerOptions"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -34,74 +38,45 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
+      <el-table-column label="交易Id" prop="id" sortable="custom" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当前电量" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="金额" prop="IMEI" sortable="custom" align="center" width="110">
         <template slot-scope="scope">
-          <span>{{ scope.row.batteryQuantity }}</span>
+          <span>{{ scope.row.money }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="可行驶(KM)" prop="IMEI" sortable="custom" align="center" width="140">
+      <el-table-column label="流水号" min-width="150px">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleCopy( row.transactionId,$event)">{{ row.transactionId }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="收款账号" prop="IMEI" sortable="custom" align="center" width="220">
         <template slot-scope="scope">
-          <span>{{ scope.row.canRunKM }}</span>
+          <span class="link-type" @click="handleCopy( row.acceptAccount,$event)">{{ scope.row.acceptAccount }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="车辆名称" min-width="150px">
+      <el-table-column label="付款账号" prop="IMEI" sortable="custom" align="center" width="220">
+        <template slot-scope="scope">
+          <span class="link-type" @click="handleCopy( row.payAccount,$event)">{{ scope.row.payAccount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="交易类型" min-width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
+          <el-tag>{{ row.transactionType | transactionTypeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="车辆状态" min-width="80px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.bikeType | bikeTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="业务状态" min-width="80px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.useType | useTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="移动中" min-width="80px">
-        <template slot-scope="{row}">
-          <span>{{ row.isMoving | moveTypeFilter }}</span>
-        </template>
-      </el-table-column>
-      <!--<el-table-column label="Readings" align="center" width="95">-->
-      <!--<template slot-scope="{row}">-->
-      <!--<span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
-      <!--<span v-else>0</span>-->
-      <!--</template>-->
+      <!--<el-table-column label="最后使用会员" min-width="180px">-->
+        <!--<template slot-scope="{row}">-->
+          <!--<span class="link-type" @click="handleCopy( row.lastUserId,$event)">会员ID：{{ row.lastUserId }}<br></span>-->
+          <!--<span class="link-type" @click="handleCopy( row.lastUserPhone,$event)">会员手机：{{ row.lastUserPhone }}  <i icon="el-icon-copy-document" /></span>-->
+        <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="支付时间" width="200px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更换电池时间" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.changeBatteryTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="110">
-        <template slot-scope="scope">
-          <span>{{ scope.row.IMEI }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="lookLocation(row)">
-            查看位置
-          </el-button>
-          <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->
-          <!--修改-->
-          <!--</el-button>-->
-          <!--<el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">-->
-          <!--删除-->
-          <!--</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -142,9 +117,9 @@
           </el-form-item>
         </el-col>
         <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆状态" prop="bikeType">
-            <el-select v-model="temp.bikeType" placeholder="车辆状态" class="filter-item">
-              <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+          <el-form-item label="车辆状态" prop="transactionType">
+            <el-select v-model="temp.transactionType" placeholder="车辆状态" class="filter-item">
+              <el-option v-for="item in transactionTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
           </el-form-item>
         </el-col>
@@ -167,8 +142,11 @@
       <div />
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
-      <fence-map :draw-type="'markers'" />
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="key" label="Channel" />
+        <el-table-column prop="pv" label="Pv" />
+      </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
@@ -177,8 +155,7 @@
 </template>
 
 <script>
-import { fetchMonitorList, fetchPv, createBike, updateBike } from '@/api/bike'
-import fenceMap from './components/map'
+import { fetchTransactionList} from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -186,16 +163,16 @@ import clip from '@/utils/clipboard' // use clipboard directly
 import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-directive
 // type : normal | noElectric | worthless | problem
 
-const bikeTypeOptions = [
-  { key: 'noElectric', display_name: '空电' },
+const transactionTypeOptions = [
+  { key: 'depositPay', display_name: '押金充值' },
   { key: 'all', display_name: '全部' },
-  { key: 'worthless', display_name: '报废' },
-  { key: 'normal', display_name: '正常' },
-  { key: 'problem', display_name: '故障' },
-  { key: 'checking', display_name: '审核' }
+  { key: 'depositWithdraw', display_name: '押金提现' },
+  { key: 'prepaid', display_name: '余额充值' },
+  { key: 'business', display_name: '业务订单' },
+  { key: 'Refund', display_name: '退款' }
 
 ]
-const bikeTypeKeyValue = bikeTypeOptions.reduce((acc, cur) => {
+const transactionTypeKeyValue = transactionTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
@@ -203,10 +180,6 @@ const isMovingOptions = [
   { key: 'isMoving', display_name: '是' },
   { key: 'notMove', display_name: '否' }
 
-]
-const needNewBatteryOptions = [
-  { key: true, display_name: '是' },
-  { key: false, display_name: '否' }
 ]
 const isMovingKeyValue = isMovingOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -225,7 +198,7 @@ const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, fenceMap },
+  components: { Pagination },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -239,8 +212,8 @@ export default {
     useTypeFilter(type) {
       return useTypeKeyValue[type]
     },
-    bikeTypeFilter(type) {
-      return bikeTypeKeyValue[type]
+    transactionTypeFilter(type) {
+      return transactionTypeKeyValue[type]
     },
     moveTypeFilter(type) {
       return isMovingKeyValue[type]
@@ -281,22 +254,16 @@ export default {
       listLoading: true,
       listQuery: {
         id: '',
-        IMEI: '',
-        bikeType: 'all',
-        isMoving: '',
-        useType: 'using',
-        minvoltage: undefined,
-        maxvoltage: undefined,
+        transactionType: '',
+        acceptAccount: '',
+        payAccount: '',
+        transactionId: '',
         duringDay: '',
         page: 1,
-        limit: 20,
-        importance: undefined,
-        bikeName: undefined,
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      needNewBatteryOptions,
-      bikeTypeOptions,
+      transactionTypeOptions,
       isMovingOptions,
       useTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -304,14 +271,8 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        IMEI: undefined,
-        bikeType: undefined,
-        isMoving: '',
-        useType: '',
-        bikeName: '',
+        transactionType: undefined,
         creatTime: new Date(),
-        updateTime: new Date(),
-        lastUserId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -324,7 +285,6 @@ export default {
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }],
-        bikeName: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -333,18 +293,12 @@ export default {
     this.getList()
   },
   methods: {
-    lookLocation(row) {
-      this.dialogPvVisible = true
-      const markerList = []
-      markerList.push({ lngLat: row.lngLat })
-      this.$store.dispatch('map/setMarkerList', markerList)
-    },
     handleCopy(text, event) {
       clip(text, event)
     },
     getList() {
       this.listLoading = true
-      fetchMonitorList(this.listQuery).then(response => {
+      fetchTransactionList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 

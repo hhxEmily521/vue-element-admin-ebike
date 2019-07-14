@@ -44,13 +44,28 @@ import { getCarType, getMarkers } from '@/api/dashboard'
 import rMenu from '../../../utils/rMenu.js'
 import { MP } from '@/utils/tmap.js'
 import { mapGetters } from 'vuex'
-
+const carType = {
+  normal: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=normal'
+  },
+  noElectric: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=noElectric'
+  },
+  worthless: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=worthless'
+  },
+  problem: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=problem'
+  }
+}
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
   computed: {
     ...mapGetters([
-      'polygonList'
+      'polygonList',
+      'markerList',
+      'polylineList'
     ])
   },
   data() {
@@ -74,10 +89,18 @@ export default {
       myPolygon: [],
       polyEditor: null,
       mapLd: false,
-      editedPlygn:null
+      editedPlygn: null
     }
   },
   watch: {
+    polylineList(val) {
+      this.removeAllOverlay()
+      this.loadPolyline(val)
+    },
+    markerList(val) {
+      this.removeAllOverlay()
+      this.loadMarkers(val)
+    },
     polygonList() {
       this.removeAllOverlay()
       this.showPolygons()
@@ -124,8 +147,10 @@ export default {
         that.editPolygon(that.polygons)
       } else if (that.drawType === 'polygonsList') {
         that.showPolygons()
-      } else {
-        that.editRectangle(that.polygons)
+      } else if (that.drawType === 'markers') {
+        that.loadMarkers(that.markerList)
+      } else if (that.drawType === 'polyline') {
+        that.loadPolyline(that.polylineList)
       }
     }).catch(err => {
       console.log(err)
@@ -133,17 +158,50 @@ export default {
     })
   },
   methods: {
-    async getCarType() {
-      const res = await getCarType()
-      this.carType = res // res.data
-      console.log(res)
-      this.getMarkers()
+    loadPolyline(data) {
+      console.log(data)
+      const that = this
+      const path = []
+      // 添加标记
+      for (let i = 0; i < data.length; i++) {
+        path.push(data[i].polyLine[0], data[i].polyLine[1])
+      }
+      console.log(path)
+      // 创建折线实例
+      var polyline = new AMap.Polyline({
+        path: path,
+        borderWeight: 2, // 线条宽度，默认为 1
+        strokeColor: 'red', // 线条颜色
+        lineJoin: 'round' // 折线拐点连接处样式
+      })
+      that.theMap.add(polyline)
+      this.setFitView(polyline)// 自动调整地图显示范围
     },
-    async getMarkers() {
-      const res = await getMarkers()
-      this.thmarkers = res.data
-      console.log(this.thmarkers)
-      this.loadMarkers(this.thmarkers)
+    loadMarkers(data) {
+      console.log(data)
+      const that = this
+      const markerArray = []
+      // 添加标记
+      for (let i = 0; i < data.length; i++) {
+        // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
+        const marker = new AMap.Marker({
+          position: new AMap.LngLat(data[i].lngLat.lng, data[i].lngLat.lat),
+          offset: new AMap.Pixel(-10, -10),
+          icon: '' // that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
+        //  title: '北京'
+        })
+        markerArray.push(marker)
+        that.theMap.add(marker)
+      }
+      this.setFitView(markerArray)// 自动调整地图显示范围
+    },
+    setFitView(coords) {
+      // 一组坐标点
+      if (coords.length > 0) {
+        this.theMap.setFitView(coords)
+      } else {
+        this.theMap.setFitView()
+      }
     },
     init(AMap) {
       const that = this
@@ -157,13 +215,13 @@ export default {
         zoom: that.mapZoom, // 设置地图显示的缩放级别
         center: that.myLatlng, // 设置地图中心点坐标
         cursor: 'crosshair',
-        viewMode: '3D',
+        //  viewMode: '3D',
         pitch: 60,
-        rotation: -35,
+        // rotation: -35,
         features: ['bg', 'road', 'point'], // 隐藏默认楼块
         mapStyle: 'amap://styles/light',
-        layers: [new AMap.TileLayer.Satellite(), // 高德默认标准图层
-          buildings],
+        // layers: [new AMap.TileLayer.Satellite(), // 高德默认标准图层
+        //   buildings],
         lang: 'zh_cn' // 设置地图语言类型
 
       }
@@ -224,6 +282,7 @@ export default {
             ',' + event.lnglat.getLat() + ']')
         }
       )
+      // that.loadMarkers(that.markerList)
     },
     showPolygons() {
       const that = this
@@ -407,7 +466,9 @@ export default {
         var RectangleEditor = new AMap.RectangleEditor(this.theMap, Rectangle)
         RectangleEditor.open()
       })
-    }, loadMarkers(data) {
+    },
+    loadMarkers1(data) {
+      debugger
       // 添加标记
       for (let i = 0; i < data.length; i++) {
         this.addMarker(data[i].lat, data[i].lng)
@@ -418,8 +479,8 @@ export default {
     addMarker(latlng) {
       // 创建一个 Marker 实例：
       var marker = new AMap.Marker({
-        position: new AMap.LngLat(latlng[0], latlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-        title: '北京'
+        position: new AMap.LngLat(latlng[0], latlng[1]) // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        // title: '北京'
       })
       this.theMap.add(marker)
       this.markersArray.push(marker)

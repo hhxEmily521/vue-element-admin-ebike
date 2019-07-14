@@ -2,25 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.id" placeholder="车辆编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.bikeName" placeholder="车辆名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.IMEI" placeholder="硬件IMEI" style="width: 240px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.bikeType" placeholder="车辆状态" clearable class="filter-item" style="width: 150px">
-        <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-select v-model="listQuery.roleType" placeholder="账号角色" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in roleTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.useType" placeholder="业务状态" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.useType" placeholder="启用状态" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-input v-model.number="listQuery.minvoltage" placeholder="最小电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model.number="listQuery.maxvoltage" placeholder="最大电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
 
-      <el-select v-model="listQuery.isMoving" placeholder="是否移动中" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in isMovingOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.needNewBattery" placeholder="待换电池" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in needNewBatteryOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
+      </el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+        新增
       </el-button>
     </div>
 
@@ -34,40 +27,29 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
+      <el-table-column label="账号ID" prop="id" sortable="custom" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当前电量" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="登录账号" prop="" align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.batteryQuantity }}</span>
+          <span>{{ scope.row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="可行驶(KM)" prop="IMEI" sortable="custom" align="center" width="140">
+      <el-table-column label="登录密码" prop="" align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.canRunKM }}</span>
+          <span>{{ scope.row.password }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="车辆名称" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
+      <el-table-column label="电话" prop="" align="center" width="210">
+        <template slot-scope="scope">
+          <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆状态" min-width="80px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.bikeType | bikeTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="业务状态" min-width="80px">
+      <el-table-column label="状态" min-width="80px">
         <template slot-scope="{row}">
           <el-tag>{{ row.useType | useTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="移动中" min-width="80px">
-        <template slot-scope="{row}">
-          <span>{{ row.isMoving | moveTypeFilter }}</span>
         </template>
       </el-table-column>
       <!--<el-table-column label="Readings" align="center" width="95">-->
@@ -76,32 +58,19 @@
       <!--<span v-else>0</span>-->
       <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="最后登录时间" width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.lastLoginTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更换电池时间" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.changeBatteryTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="110">
-        <template slot-scope="scope">
-          <span>{{ scope.row.IMEI }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="lookLocation(row)">
-            查看位置
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            修改
           </el-button>
-          <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->
-          <!--修改-->
-          <!--</el-button>-->
-          <!--<el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">-->
-          <!--删除-->
-          <!--</el-button>-->
+          <el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -109,50 +78,31 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆名称" prop="bikeName">
-            <el-input v-model="temp.bikeName" />
+        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="账号">
+            <el-input v-model="temp.account" />
           </el-form-item>
         </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="创建时间" label-position="left" label-width="100px" prop="creatTime">
-            <el-date-picker v-model="temp.createTime" :disabled="true" type="datetime" placeholder="创建时间" />
+        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="密码">
+            <el-input v-model="temp.password" />
           </el-form-item>
         </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆IMEI" prop="title">
-            <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="修改时间" prop="updateTime">
-            <el-date-picker v-model="temp.updateTime" :disabled="true" type="datetime" placeholder="修改时间" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆编号" prop="id">
-            <el-input v-model="temp.id" :disabled="true" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="业务状态">
-            <el-select v-model="temp.useType" placeholder="业务状态" class="filter-item">
-              <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" :disabled="true" />
+        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="角色" prop="roleType">
+            <el-select v-model="temp.role" placeholder="角色" class="filter-item">
+              <el-option v-for="item in roleTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆状态" prop="bikeType">
-            <el-select v-model="temp.bikeType" placeholder="车辆状态" class="filter-item">
-              <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-            </el-select>
+        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="手机">
+            <el-input v-model="temp.phone" />
           </el-form-item>
         </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="最后会员">
-            <el-input v-model="temp.lastUserId" :disabled="true" />
-          </el-form-item>
-        </el-col>
+        <el-select v-if="dialogStatus==='update'" v-model="temp.useType" placeholder="启用状态" clearable class="filter-item" style="width: 130px">
+          <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+        </el-select>
       </el-form>
       <!--<el-col :xs="24" :sm="24" :lg="24" class="editBox">-->
       <div slot="footer" class="dialog-footer">
@@ -167,8 +117,11 @@
       <div />
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
-      <fence-map :draw-type="'markers'" />
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="key" label="Channel" />
+        <el-table-column prop="pv" label="Pv" />
+      </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
@@ -177,8 +130,7 @@
 </template>
 
 <script>
-import { fetchMonitorList, fetchPv, createBike, updateBike } from '@/api/bike'
-import fenceMap from './components/map'
+import { fetchAccountList, fetchPv, createBike, updateAccount } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -186,16 +138,14 @@ import clip from '@/utils/clipboard' // use clipboard directly
 import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-directive
 // type : normal | noElectric | worthless | problem
 
-const bikeTypeOptions = [
-  { key: 'noElectric', display_name: '空电' },
+const roleTypeOptions = [
+  { key: 'admin', display_name: '超级管理员' },
   { key: 'all', display_name: '全部' },
-  { key: 'worthless', display_name: '报废' },
-  { key: 'normal', display_name: '正常' },
-  { key: 'problem', display_name: '故障' },
-  { key: 'checking', display_name: '审核' }
+  { key: 'webOperate', display_name: '运营人员' },
+  { key: 'bikeManager', display_name: '车辆管理' }
 
 ]
-const bikeTypeKeyValue = bikeTypeOptions.reduce((acc, cur) => {
+const roleTypeKeyValue = roleTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
@@ -204,17 +154,13 @@ const isMovingOptions = [
   { key: 'notMove', display_name: '否' }
 
 ]
-const needNewBatteryOptions = [
-  { key: true, display_name: '是' },
-  { key: false, display_name: '否' }
-]
 const isMovingKeyValue = isMovingOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
 const useTypeOptions = [
-  { key: 'using', display_name: '使用中' },
-  { key: 'notUse', display_name: '空闲' }
+  { key: 'using', display_name: '启用' },
+  { key: 'notUse', display_name: '停用' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -225,7 +171,7 @@ const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, fenceMap },
+  components: { Pagination },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -239,8 +185,8 @@ export default {
     useTypeFilter(type) {
       return useTypeKeyValue[type]
     },
-    bikeTypeFilter(type) {
-      return bikeTypeKeyValue[type]
+    roleTypeFilter(type) {
+      return roleTypeKeyValue[type]
     },
     moveTypeFilter(type) {
       return isMovingKeyValue[type]
@@ -281,22 +227,16 @@ export default {
       listLoading: true,
       listQuery: {
         id: '',
-        IMEI: '',
-        bikeType: 'all',
+        role: '',
         isMoving: '',
         useType: 'using',
-        minvoltage: undefined,
-        maxvoltage: undefined,
         duringDay: '',
         page: 1,
         limit: 20,
-        importance: undefined,
-        bikeName: undefined,
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      needNewBatteryOptions,
-      bikeTypeOptions,
+      roleTypeOptions,
       isMovingOptions,
       useTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -304,14 +244,10 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        IMEI: undefined,
-        bikeType: undefined,
-        isMoving: '',
-        useType: '',
-        bikeName: '',
-        creatTime: new Date(),
-        updateTime: new Date(),
-        lastUserId: undefined
+        account: undefined,
+        password: undefined,
+        role: undefined,
+        useType: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -324,7 +260,7 @@ export default {
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }],
-        bikeName: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        roleName: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -333,18 +269,12 @@ export default {
     this.getList()
   },
   methods: {
-    lookLocation(row) {
-      this.dialogPvVisible = true
-      const markerList = []
-      markerList.push({ lngLat: row.lngLat })
-      this.$store.dispatch('map/setMarkerList', markerList)
-    },
     handleCopy(text, event) {
       clip(text, event)
     },
     getList() {
       this.listLoading = true
-      fetchMonitorList(this.listQuery).then(response => {
+      fetchAccountList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 
@@ -382,14 +312,10 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        IMEI: undefined,
-        bikeType: 'normal',
-        isMoving: 'notMove',
-        useType: 'notUse',
-        bikeName: '',
-        createTime: new Date(),
-        updateTime: new Date(),
-        lastUserId: undefined
+        account: undefined,
+        password: undefined,
+        role: undefined,
+        useType: ''
       }
     },
     handleCreate() {
@@ -404,7 +330,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
+          this.temp.useType = 'using'
           createBike(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -420,7 +346,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.updateTime = new Date()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -432,7 +357,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateBike(tempData).then(() => {
+          updateAccount(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)

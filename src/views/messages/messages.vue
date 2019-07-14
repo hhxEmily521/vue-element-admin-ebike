@@ -1,23 +1,12 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.id" placeholder="车辆编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.bikeName" placeholder="车辆名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.IMEI" placeholder="硬件IMEI" style="width: 240px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.bikeType" placeholder="车辆状态" clearable class="filter-item" style="width: 150px">
-        <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-input v-model="listQuery.id" placeholder="消息编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.useType" placeholder="业务状态" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <el-input v-model.number="listQuery.minvoltage" placeholder="最小电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model.number="listQuery.maxvoltage" placeholder="最大电压" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-
-      <el-select v-model="listQuery.isMoving" placeholder="是否移动中" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in isMovingOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.needNewBattery" placeholder="待换电池" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in needNewBatteryOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-select v-model="listQuery.messageType" placeholder="消息类型" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in messageTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -34,124 +23,54 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
+      <el-table-column label="消息编号" prop="id" sortable="custom" align="center" width="110">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当前电量" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="是否处理" min-width="80px">
+        <template slot-scope="{row}">
+          <span>{{ row.isDeal | isDealTypeFilter }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="消息类型" min-width="130px">
+        <template slot-scope="{row}">
+          <el-tag>{{ row.messageType | messageTypeFilter }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="内容" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.batteryQuantity }}</span>
+          <span>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="可行驶(KM)" prop="IMEI" sortable="custom" align="center" width="140">
-        <template slot-scope="scope">
-          <span>{{ scope.row.canRunKM }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="车辆名称" min-width="150px">
+      <el-table-column label="会员" min-width="180px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
+          <span class="link-type" @click="handleCopy( row.lastUserId,$event)">会员ID：{{ row.lastUserId }}<br></span>
+          <span class="link-type" @click="handleCopy( row.lastUserPhone,$event)">会员手机：{{ row.lastUserPhone }}  <i icon="el-icon-copy-document" /></span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆状态" min-width="80px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.bikeType | bikeTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="业务状态" min-width="80px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.useType | useTypeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="移动中" min-width="80px">
-        <template slot-scope="{row}">
-          <span>{{ row.isMoving | moveTypeFilter }}</span>
-        </template>
-      </el-table-column>
-      <!--<el-table-column label="Readings" align="center" width="95">-->
-      <!--<template slot-scope="{row}">-->
-      <!--<span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
-      <!--<span v-else>0</span>-->
-      <!--</template>-->
-      <!--</el-table-column>-->
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="时间" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更换电池时间" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.changeBatteryTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="110">
-        <template slot-scope="scope">
-          <span>{{ scope.row.IMEI }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="lookLocation(row)">
-            查看位置
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            更改状态
           </el-button>
-          <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->
-          <!--修改-->
-          <!--</el-button>-->
-          <!--<el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">-->
-          <!--删除-->
-          <!--</el-button>-->
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
         <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆名称" prop="bikeName">
-            <el-input v-model="temp.bikeName" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="创建时间" label-position="left" label-width="100px" prop="creatTime">
-            <el-date-picker v-model="temp.createTime" :disabled="true" type="datetime" placeholder="创建时间" />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆IMEI" prop="title">
-            <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="修改时间" prop="updateTime">
-            <el-date-picker v-model="temp.updateTime" :disabled="true" type="datetime" placeholder="修改时间" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆编号" prop="id">
-            <el-input v-model="temp.id" :disabled="true" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="业务状态">
-            <el-select v-model="temp.useType" placeholder="业务状态" class="filter-item">
-              <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" :disabled="true" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆状态" prop="bikeType">
-            <el-select v-model="temp.bikeType" placeholder="车辆状态" class="filter-item">
-              <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='update'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="最后会员">
-            <el-input v-model="temp.lastUserId" :disabled="true" />
-          </el-form-item>
+          <el-form-item label="是否处理">
+            <el-select v-model="temp.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+              <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+            </el-select>          </el-form-item>
         </el-col>
       </el-form>
       <!--<el-col :xs="24" :sm="24" :lg="24" class="editBox">-->
@@ -167,8 +86,10 @@
       <div />
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
-      <fence-map :draw-type="'markers'" />
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-select v-model="temp.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
@@ -177,8 +98,7 @@
 </template>
 
 <script>
-import { fetchMonitorList, fetchPv, createBike, updateBike } from '@/api/bike'
-import fenceMap from './components/map'
+import { fetchList, updateSystem } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -208,6 +128,10 @@ const needNewBatteryOptions = [
   { key: true, display_name: '是' },
   { key: false, display_name: '否' }
 ]
+const isDealOptions = [
+  { key: true, display_name: '是' },
+  { key: false, display_name: '否' }
+]
 const isMovingKeyValue = isMovingOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
@@ -216,7 +140,21 @@ const useTypeOptions = [
   { key: 'using', display_name: '使用中' },
   { key: 'notUse', display_name: '空闲' }
 ]
+const messageTypeOptions = [
+  { key: 'problem', display_name: '上报故障' },
+  { key: 'illegalReport', display_name: '非法举报' },
+  { key: 'adviceBack', display_name: '意见反馈' },
+  { key: 'anormalPlay', display_name: '扣费异常' }
+]
 
+const messageTypeKeyValue = messageTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+const isDealTypeKeyValue = isDealOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
 // arr to obj, such as { CN : "China", US : "USA" }
 const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -225,7 +163,7 @@ const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, fenceMap },
+  components: { Pagination },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -244,6 +182,12 @@ export default {
     },
     moveTypeFilter(type) {
       return isMovingKeyValue[type]
+    },
+    messageTypeFilter(type) {
+      return messageTypeKeyValue[type]
+    },
+    isDealTypeFilter(type) {
+      return isDealTypeKeyValue[type]
     }
   },
   data() {
@@ -281,24 +225,19 @@ export default {
       listLoading: true,
       listQuery: {
         id: '',
-        IMEI: '',
-        bikeType: 'all',
-        isMoving: '',
-        useType: 'using',
-        minvoltage: undefined,
-        maxvoltage: undefined,
-        duringDay: '',
         page: 1,
         limit: 20,
-        importance: undefined,
-        bikeName: undefined,
+        messageType: undefined,
+        isDeal: undefined,
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
       needNewBatteryOptions,
       bikeTypeOptions,
+      isDealOptions,
       isMovingOptions,
       useTypeOptions,
+      messageTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
@@ -333,18 +272,16 @@ export default {
     this.getList()
   },
   methods: {
-    lookLocation(row) {
-      this.dialogPvVisible = true
-      const markerList = []
-      markerList.push({ lngLat: row.lngLat })
-      this.$store.dispatch('map/setMarkerList', markerList)
+
+    changeType() {
+      this.dialogFormVisible = true
     },
     handleCopy(text, event) {
       clip(text, event)
     },
     getList() {
       this.listLoading = true
-      fetchMonitorList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 
@@ -420,7 +357,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.updateTime = new Date()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -431,8 +367,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateBike(tempData).then(() => {
+          updateSystem(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
@@ -461,11 +396,8 @@ export default {
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
+    handleLocation(pv) {
+      this.dialogPvVisible = true
     },
     handleDownload() {
       this.downloadLoading = true
