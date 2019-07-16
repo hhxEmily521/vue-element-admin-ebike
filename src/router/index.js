@@ -71,8 +71,6 @@ export const constantRoutes = [
   },
   {
     path: '/',
-    component: Layout,
-    redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
@@ -508,7 +506,8 @@ export const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support  history  hash
+  base: '/dist/',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
