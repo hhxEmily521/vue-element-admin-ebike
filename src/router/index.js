@@ -6,10 +6,10 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 /* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
-import nestedRouter from './modules/nested'
+// import componentsRouter from './modules/components'
+// import chartsRouter from './modules/charts'
+// import tableRouter from './modules/table'
+// import nestedRouter from './modules/nested'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -39,13 +39,16 @@ import nestedRouter from './modules/nested'
  */
 export const constantRoutes = [
   {
-    path: '/redirect',
+    path: '/',
+    redirect: '/vue-element-admin-ebike',
     component: Layout,
     hidden: true,
     children: [
       {
         path: '/redirect/:path*',
-        component: () => import('@/views/redirect/index')
+        // component: () => import('@/views/redirect/index')
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '首页', icon: 'eindex', affix: true }
       }
     ]
   },
@@ -70,13 +73,14 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/',
+    path: '/index',
     children: [
       {
         path: 'dashboard',
+        redirect: '/vue-element-admin-ebike',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'eindex', affix: true }
       }
     ]
   }
@@ -126,43 +130,76 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  // {
+  //   path: '/permission',
+  //   component: Layout,
+  //   redirect: '/permission/page',
+  //   alwaysShow: true, // will always show the root menu
+  //   name: 'Permission',
+  //   meta: {
+  //     title: '权限',
+  //     icon: 'lock',
+  //     roles: ['admin', 'editor'] // you can set roles in root nav
+  //   },
+  //   children: [
+  //     {
+  //       path: 'page',
+  //       component: () => import('@/views/permission/page'),
+  //       name: 'PagePermission',
+  //       meta: {
+  //         title: '页面权限管理',
+  //         roles: ['admin'] // or you can only set roles in sub nav
+  //       }
+  //     },
+  //
+  //     // {
+  //     //   path: 'directive',
+  //     //   component: () => import('@/views/permission/directive'),
+  //     //   name: 'DirectivePermission',
+  //     //   meta: {
+  //     //     title: 'Directive Permission'
+  //     //     // if do not set roles, means: this page does not require permission
+  //     //   }
+  //     // },
+  //     {
+  //       path: 'role',
+  //       component: () => import('@/views/permission/role'),
+  //       name: 'RolePermission',
+  //       meta: {
+  //         title: '角色权限管理',
+  //         roles: ['admin']
+  //       }
+  //     }
+  //   ]
+  // },
   {
-    path: '/permission',
+    path: '/order',
     component: Layout,
-    redirect: '/permission/page',
-    alwaysShow: true, // will always show the root menu
-    name: 'Permission',
+    redirect: '/orders/order-table',
+    // alwaysShow: true, // will always show the root menu
+    name: 'order',
     meta: {
-      title: '权限',
+      title: '订单',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
       {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
+        path: 'orderTable',
+        component: () => import('@/views/orders/order-table'),
+        name: 'orderTable',
         meta: {
-          title: '页面权限管理',
+          title: '订单管理',
           roles: ['admin'] // or you can only set roles in sub nav
         }
       },
-      // {
-      //   path: 'directive',
-      //   component: () => import('@/views/permission/directive'),
-      //   name: 'DirectivePermission',
-      //   meta: {
-      //     title: 'Directive Permission'
-      //     // if do not set roles, means: this page does not require permission
-      //   }
-      // },
       {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
+        path: 'backMoneyTable',
+        component: () => import('@/views/orders/backMoney-table'),
+        name: 'orderTable',
         meta: {
-          title: '角色权限管理',
-          roles: ['admin']
+          title: '退款管理',
+          roles: ['admin'] // or you can only set roles in sub nav
         }
       }
     ]
@@ -175,7 +212,7 @@ export const asyncRoutes = [
     name: 'elecFence',
     meta: {
       title: '电子围栏',
-      icon: 'lock',
+      icon: 'efence',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
@@ -205,7 +242,7 @@ export const asyncRoutes = [
     name: 'elecBike',
     meta: {
       title: '车辆',
-      icon: 'lock',
+      icon: 'ebike',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
@@ -261,7 +298,7 @@ export const asyncRoutes = [
         path: 'tradingRecord',
         component: () => import('@/views/tradingRecord/tradingRecord'),
         name: 'tradingRecord',
-        meta: { title: '交易记录', icon: 'list' }
+        meta: { title: '交易记录', icon: 'etransaction' }
       }
     ]
   },
@@ -273,7 +310,7 @@ export const asyncRoutes = [
         path: 'messgages',
         component: () => import('@/views/messages/messages'),
         name: 'messages',
-        meta: { title: '消息', icon: 'bug' }
+        meta: { title: '消息', icon: 'emessage' }
       }
     ]
   },
@@ -285,7 +322,7 @@ export const asyncRoutes = [
         path: 'system',
         component: () => import('@/views/system/system'),
         name: 'system',
-        meta: { title: '系统', icon: 'bug' }
+        meta: { title: '系统', icon: 'esystem' }
       }
     ]
   },
@@ -502,12 +539,12 @@ export const asyncRoutes = [
   // },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/redirect', hidden: true }
 ]
 
 const createRouter = () => new Router({
   mode: 'history', // require service support  history  hash
-  base: '/dist/',
+  // base: '/dist/',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

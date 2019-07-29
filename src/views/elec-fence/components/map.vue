@@ -2,16 +2,17 @@
   <div>
     <div id="container" />
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
-    <div v-show="drawType == 'polyon'||drawType == 'rectangle'" class="input-card " style="width: 200px">
+    <div v-show="drawType == 'polyon'||drawType == 'createPolyon'" class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
-      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
-      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
-      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <!---->
+      <el-button v-show="drawType != 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
+      <!--<el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>-->
+      <el-button v-show="drawType != 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
       <el-button v-show="drawType === 'polyon'" class="btn" type="primary" style="margin-bottom: 5px" @click="open()">开始编辑</el-button>
       <el-button v-show="drawType === 'polyon'" class="btn" type="primary" @click="close()">结束编辑</el-button>
       <el-select
-        v-show="drawType !== 'polyon'"
+        v-show="drawType != 'polyon'"
         v-model="inptVal"
         clearable
         filterable
@@ -74,12 +75,14 @@ export default {
       myPolygon: [],
       polyEditor: null,
       mapLd: false,
-      editedPlygn:null
+      editedPlygn: null
     }
   },
   watch: {
     polygonList() {
-      this.removeAllOverlay()
+      if (this.theMap) {
+        this.removeAllOverlay()
+      }
       this.showPolygons()
     },
     myPolygon(val) {
@@ -109,6 +112,8 @@ export default {
           AMap.event.addListener(that.mouseTool, 'draw', function(e) {
             // 获取路径/范围
             that.myPolygon = e.obj.getPath()
+            that.editedPlygn = { myPolygon: e.obj.getPath(), drawType: 'polyon' }
+            that.$emit('drawChange', that.editedPlygn)
             console.log(that.myPolygon)
           })
         })
@@ -125,7 +130,12 @@ export default {
       } else if (that.drawType === 'polygonsList') {
         that.showPolygons()
       } else {
-        that.editRectangle(that.polygons)
+        var marker = new AMap.Marker({
+          position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title: 'hellos'
+        })
+        this.theMap.add(marker)
+        // that.editRectangle(that.polygons)
       }
     }).catch(err => {
       console.log(err)
@@ -144,6 +154,9 @@ export default {
       this.thmarkers = res.data
       console.log(this.thmarkers)
       this.loadMarkers(this.thmarkers)
+    },
+    showInfoP(e) {
+      console.log(e)
     },
     init(AMap) {
       const that = this
@@ -224,6 +237,21 @@ export default {
             ',' + event.lnglat.getLat() + ']')
         }
       )
+      if (that.drawType === 'createPolyon') {
+        var marker = new AMap.Marker({
+          position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title: 'helloscreatePolyon'
+        })
+        this.theMap.add(marker)
+        marker.on('click', that.showInfoWin(that.myLatlng, '点击的位置哟'))
+      }
+    },
+    showInfoWin(winLatlng, text) {
+      var infoWindow = new AMap.InfoWindow({
+        anchor: 'top-left',
+        content: text
+      })
+      infoWindow.open(this.theMap, winLatlng)
     },
     showPolygons() {
       const that = this
@@ -308,7 +336,7 @@ export default {
       })
     },
     drawPolygon() {
-      this.drawType = 'polyon'
+      // this.drawType = 'polyon'
       this.mouseTool.polygon({
         strokeColor: '#FF33FF',
         strokeWeight: 6,
@@ -360,13 +388,44 @@ export default {
         strokeOpacity: 0.2,
         fillOpacity: 0.4,
         fillColor: '#1791fc',
-        zIndex: 50
+        zIndex: 50,
+        draggable: true
+
       })
 
       this.theMap.add(polygon)
+      console.log(polygon)
       // 缩放地图到合适的视野级别
       this.theMap.setFitView([polygon])
+      polygon.on('dragend', function(event) {
+        console.log(event)
 
+        console.log(event.lnglat.Q - event.target.B.path[0].Q)
+        const diffLat = event.lnglat.lat - event.target.B.path[0].lat
+        const diffLng = event.lnglat.lng - event.target.B.path[0].lng
+        const myPlygn = polygons
+
+        for (let i = 0; i < myPlygn.length; i++) {
+          if (diffLat >= 0) {
+            myPlygn[i].lat += Math.abs(diffLat)
+          } else {
+            myPlygn[i].lat -= Math.abs(diffLat)
+          }
+          if (diffLng >= 0) {
+            myPlygn[i].lng += Math.abs(diffLng)
+          } else {
+            myPlygn[i].lng -= Math.abs(diffLng)
+          }
+          // myPlygn[i].lat += diffLat
+          // myPlygn[i].lng += diffLng
+        }
+
+        console.log(myPlygn[0].lng)
+        console.log(event.lnglat.Q)
+        console.log(event.target.B.path[0].Q)
+        that.editedPlygn = { myPolygon: myPlygn, drawType: 'polyon' }
+        that.$emit('drawChange', that.editedPlygn)
+      })
       this.polyEditor = new AMap.PolyEditor(this.theMap, polygon)
 
       this.polyEditor.on('addnode', function(event) {
@@ -384,6 +443,8 @@ export default {
       this.polyEditor.on('end', function(event) {
         console.log('触发事件： end')
         // event.target 即为编辑后的多边形对象
+        console.log(event.target)
+        console.log(polygon)
         that.myPolygon = event.target.B.path
         that.editedPlygn = { myPolygon: event.target.B.path, drawType: 'polyon' }
         that.$emit('drawChange', that.editedPlygn)
@@ -452,17 +513,6 @@ export default {
         this.markersArray.length = 0
       }
     },
-    setBounds(coords) {
-      // 一组坐标点
-      // 创建LatLngBounds实例
-      var latlngBounds = new qq.maps.LatLngBounds()
-      // 将坐标逐一做为参数传入extend方法，latlngBounds会根据传入坐标自动扩展生成
-      for (var i = 0; i < coords.length; i++) {
-        latlngBounds.extend(new qq.maps.LatLng(coords[i].lat, coords[i].lng))
-      }
-      // 调用fitBounds自动调整地图显示范围
-      this.theMap.fitBounds(latlngBounds)
-    },
     getMapCenter() {
       // 获取地图中心点
       const centerLatLng = this.theMap.getCenter()
@@ -490,7 +540,7 @@ export default {
     border-radius: 0.4rem;
     box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
     position: fixed;
-    bottom: 4rem;
+    bottom: 12rem;
     right: 1rem;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;

@@ -27,9 +27,9 @@
       <el-select v-model="listQuery.useType" placeholder="业务状态" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
+      <!--<el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
+        <!--<el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
+      <!--</el-select>-->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -108,9 +108,9 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             修改
           </el-button>
-          <el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
-            删除
-          </el-button>
+          <!--<el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">-->
+            <!--删除-->
+          <!--</el-button>-->
         </template>
       </el-table-column>
     </el-table>

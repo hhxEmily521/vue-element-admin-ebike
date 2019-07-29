@@ -93,10 +93,6 @@ export default {
       // 获取地图中心点
       const centerLatLng = this.theMap.getCenter()
       console.log('lat:' + centerLatLng.lat, 'lng:' + centerLatLng.lng)
-    },
-    // 修改地图中心点
-    changeMapCenter(lat, lng) {
-      this.theMap.setCenter(new qq.maps.LatLng(lat, lng))
     }
   }
 }

@@ -354,24 +354,6 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createBike(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.updateTime = new Date()
@@ -379,30 +361,6 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateBike(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
       })
     },
     handleDelete(row) {
@@ -416,10 +374,6 @@ export default {
       this.list.splice(index, 1)
     },
     handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
     handleDownload() {
       this.downloadLoading = true

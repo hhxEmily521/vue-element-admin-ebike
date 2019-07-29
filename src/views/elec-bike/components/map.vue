@@ -473,7 +473,6 @@ export default {
       for (let i = 0; i < data.length; i++) {
         this.addMarker(data[i].lat, data[i].lng)
       }
-      // this.setBounds(data)// 自动调整地图显示范围
     },
     // 添加标记
     addMarker(latlng) {
@@ -512,17 +511,6 @@ export default {
         }
         this.markersArray.length = 0
       }
-    },
-    setBounds(coords) {
-      // 一组坐标点
-      // 创建LatLngBounds实例
-      var latlngBounds = new qq.maps.LatLngBounds()
-      // 将坐标逐一做为参数传入extend方法，latlngBounds会根据传入坐标自动扩展生成
-      for (var i = 0; i < coords.length; i++) {
-        latlngBounds.extend(new qq.maps.LatLng(coords[i].lat, coords[i].lng))
-      }
-      // 调用fitBounds自动调整地图显示范围
-      this.theMap.fitBounds(latlngBounds)
     },
     getMapCenter() {
       // 获取地图中心点

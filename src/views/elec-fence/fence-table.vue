@@ -342,7 +342,7 @@ export default {
         title: '',
         type: '',
         drawzPolygon: [],
-        drawType: ''
+        drawType: 'createPolyon'
       }
     },
     handleCreate() {
@@ -358,6 +358,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.address = '上海浦东'
+          this.temp.drawzPolygon = this.editedPlygn.myPolygon
           createFence(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -374,6 +375,7 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
+      this.temp.drawType = 'polyon'
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -390,7 +392,6 @@ export default {
           updateFence(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
-                debugger
                 const index = this.list.indexOf(v)
                 this.list.splice(index, 1, this.temp)
                 break

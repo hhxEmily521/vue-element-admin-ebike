@@ -16,7 +16,7 @@ history({
 
 app.use(history())
 
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, '/dist')));
 
 app.listen(port, () => {
   console.log('Listening at http://localhost:' + port)

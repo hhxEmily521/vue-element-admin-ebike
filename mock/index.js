@@ -9,6 +9,8 @@ import dashboard from './dashboard'
 import fence from './fence'
 import bike from './bike'
 import system from './system'
+import backMoney from './backMoney'
+import order from './order'
 
 const mocks = [
   ...user,
@@ -18,7 +20,9 @@ const mocks = [
   ...dashboard,
   ...fence,
   ...bike,
-  ...system
+  ...system,
+  ...backMoney,
+  ...order
 ]
 
 // for front mock
