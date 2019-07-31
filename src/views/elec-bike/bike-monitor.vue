@@ -168,11 +168,11 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
-      <fence-map :draw-type="'markers'" />
-      <span slot="footer" class="dialog-footer">
+    <fence-map :draw-type="'markers'" />
+    <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
-    </el-dialog>
+  </el-dialog>
   </div>
 </template>
 
@@ -409,8 +409,8 @@ export default {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
+              title: '成功',
+              message: '创建成功',
               type: 'success',
               duration: 2000
             })
@@ -442,8 +442,8 @@ export default {
             }
             this.dialogFormVisible = false
             this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
+              title: '成功',
+              message: '更新成功',
               type: 'success',
               duration: 2000
             })
@@ -453,8 +453,8 @@ export default {
     },
     handleDelete(row) {
       this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
+        title: '成功',
+        message: '删除成功',
         type: 'success',
         duration: 2000
       })

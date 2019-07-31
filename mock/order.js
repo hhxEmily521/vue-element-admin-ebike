@@ -9,6 +9,9 @@ const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="ht
 const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
 
 for (let i = 0; i < count; i++) {
+  let addnum = 0
+  const divBy = Math.random()
+  addnum = divBy / Math.random() * 20
   List.push(Mock.mock({
     id: '@increment',
     // IMEI: 'IMEI' + '@increment',
@@ -42,6 +45,7 @@ for (let i = 0; i < count; i++) {
     backMoneyId: '2c9009e369f815e0016b0e3e7a' + '@integer(1, 500)', // 退款订单编号
     logitude: '@float(0.00000,50.00000)', // 车辆最后经度
     latiude: '@float(0.00000,50.00000)', // 车辆最后纬度
+    lngLat: { 'lng': 117.211855 + addnum, 'lat': 29.297727 + addnum },
     electrucity: '@integer(0, 100)' + '%', // 车辆最后电量
     elecFence: 'N' + '@integer(1, 500)', // 车辆停靠电子围栏
     operateId: 'O' + '@integer(1, 500)', // 操作人ID
@@ -172,6 +176,16 @@ export default [
 
   {
     url: '/bike/update',
+    type: 'post',
+    response: _ => {
+      return {
+        code: 20000,
+        data: 'success'
+      }
+    }
+  },
+  {
+    url: '/bike/backEbikeByManual',
     type: 'post',
     response: _ => {
       return {

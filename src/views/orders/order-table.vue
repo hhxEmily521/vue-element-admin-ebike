@@ -182,7 +182,7 @@
           <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
             订单详情
           </el-button>
-          <el-button size="mini" style="width: 80px" @click="false">
+          <el-button v-if="row.orderType!='finish'" size="mini" style="width: 80px" @click="lookLocation(row)">
             手动还车
           </el-button>
           <el-button size="mini" type="danger" style="width:80px" @click="dialogBackMoneyFuntion(row)">
@@ -337,16 +337,6 @@
       <div />
     </el-dialog>
 
-    <!--<el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>-->
-
     <el-dialog
       title="订单详情"
       :visible.sync="dialogBackMoney"
@@ -476,12 +466,21 @@
       <!--</el-col>-->
       <div />
     </el-dialog>
+    <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
+      <fence-map :draw-type="'markers'" />
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogPvVisible = false">取消</el-button>
+        <el-button type="primary" @click="backEbikeByManual">确认还车</el-button>
+
+      </span>
+    </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, updateBike } from '@/api/order'
+import { fetchList, createBike, updateBike, backEbikeByManual } from '@/api/order'
+import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -548,7 +547,7 @@ const useTypeOptions = [
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, fenceMap },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -669,6 +668,35 @@ export default {
     this.getList()
   },
   methods: {
+    lookLocation(row) {
+      this.temp = row
+      this.dialogPvVisible = true
+      const markerList = []
+      markerList.push({ lngLat: row.lngLat })
+      this.$store.dispatch('map/setMarkerList', markerList)
+    },
+    backEbikeByManual() {
+      this.dialogPvVisible = false
+      const tempData = Object.assign({}, this.temp)
+      this.temp.orderType = 'finish'
+      tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+      backEbikeByManual(tempData).then(() => {
+        for (const v of this.list) {
+          if (v.id === this.temp.id) {
+            const index = this.list.indexOf(v)
+            this.list.splice(index, 1, this.temp)
+            break
+          }
+        }
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
     handleCopy(text, event) {
       clip(text, event)
     },
@@ -739,8 +767,8 @@ export default {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
+              title: '成功',
+              message: '创建成功',
               type: 'success',
               duration: 2000
             })
@@ -781,8 +809,8 @@ export default {
             }
             this.dialogFormVisible = false
             this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
+              title: '成功',
+              message: '更新成功',
               type: 'success',
               duration: 2000
             })
@@ -792,19 +820,13 @@ export default {
     },
     handleDelete(row) {
       this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
+        title: '成功',
+        message: '删除成功',
         type: 'success',
         duration: 2000
       })
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
     handleReset() {
       this.listQuery.id = ''

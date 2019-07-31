@@ -180,7 +180,7 @@ export const asyncRoutes = [
     name: 'order',
     meta: {
       title: '订单',
-      icon: 'lock',
+      icon: 'eorder',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [

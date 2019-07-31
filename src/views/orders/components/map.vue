@@ -2,17 +2,16 @@
   <div>
     <div id="container" />
     <div v-show="showLabel" class="latlngLabel" :style="{left:labelLeft+'px',top:labelTop+'px'}">{{ cursorLatLng.lat+'--'+cursorLatLng.lng }}</div>
-    <div v-show="drawType == 'polyon'||drawType == 'createPolyon'" class="input-card " style="width: 200px">
+    <div v-show="drawType == 'polyon'||drawType == 'rectangle'" class="input-card " style="width: 200px">
       <h5 style="margin: 6px 0 10px 0; font-weight: 600;text-align: center">绘制电子围栏</h5>
       <!--<button class="btn" @click="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>-->
-      <!---->
-      <el-button v-show="drawType != 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
-      <!--<el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>-->
-      <el-button v-show="drawType != 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawPolygon()">绘制多边形</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="drawRectangle()">绘制矩形</el-button>
+      <el-button v-show="drawType !== 'polyon'" class="btn " type="primary" plain style="margin-bottom: 5px" @click="removeAllOverlay()">清除绘制</el-button>
       <el-button v-show="drawType === 'polyon'" class="btn" type="primary" style="margin-bottom: 5px" @click="open()">开始编辑</el-button>
       <el-button v-show="drawType === 'polyon'" class="btn" type="primary" @click="close()">结束编辑</el-button>
       <el-select
-        v-show="drawType != 'polyon'"
+        v-show="drawType !== 'polyon'"
         v-model="inptVal"
         clearable
         filterable
@@ -45,13 +44,28 @@ import { getCarType, getMarkers } from '@/api/dashboard'
 import rMenu from '../../../utils/rMenu.js'
 import { MP } from '@/utils/tmap.js'
 import { mapGetters } from 'vuex'
-
+const carType = {
+  normal: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=normal'
+  },
+  noElectric: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=noElectric'
+  },
+  worthless: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=worthless'
+  },
+  problem: {
+    imgUrl: '/static/img/local.ed3e6852.svg?type=problem'
+  }
+}
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
   computed: {
     ...mapGetters([
-      'polygonList'
+      'polygonList',
+      'markerList',
+      'polylineList'
     ])
   },
   data() {
@@ -79,10 +93,16 @@ export default {
     }
   },
   watch: {
+    polylineList(val) {
+      this.removeAllOverlay()
+      this.loadPolyline(val)
+    },
+    markerList(val) {
+      this.removeAllOverlay()
+      this.loadMarkers(val)
+    },
     polygonList() {
-      if (this.theMap) {
-        this.removeAllOverlay()
-      }
+      this.removeAllOverlay()
       this.showPolygons()
     },
     myPolygon(val) {
@@ -112,8 +132,6 @@ export default {
           AMap.event.addListener(that.mouseTool, 'draw', function(e) {
             // 获取路径/范围
             that.myPolygon = e.obj.getPath()
-            that.editedPlygn = { myPolygon: e.obj.getPath(), drawType: 'polyon' }
-            that.$emit('drawChange', that.editedPlygn)
             console.log(that.myPolygon)
           })
         })
@@ -129,13 +147,10 @@ export default {
         that.editPolygon(that.polygons)
       } else if (that.drawType === 'polygonsList') {
         that.showPolygons()
-      } else {
-        var marker = new AMap.Marker({
-          position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title: 'hellos'
-        })
-        this.theMap.add(marker)
-        // that.editRectangle(that.polygons)
+      } else if (that.drawType === 'markers') {
+        that.loadMarkers(that.markerList)
+      } else if (that.drawType === 'polyline') {
+        that.loadPolyline(that.polylineList)
       }
     }).catch(err => {
       console.log(err)
@@ -143,20 +158,50 @@ export default {
     })
   },
   methods: {
-    async getCarType() {
-      const res = await getCarType()
-      this.carType = res // res.data
-      console.log(res)
-      this.getMarkers()
+    loadPolyline(data) {
+      console.log(data)
+      const that = this
+      const path = []
+      // 添加标记
+      for (let i = 0; i < data.length; i++) {
+        path.push(data[i].polyLine[0], data[i].polyLine[1])
+      }
+      console.log(path)
+      // 创建折线实例
+      var polyline = new AMap.Polyline({
+        path: path,
+        borderWeight: 2, // 线条宽度，默认为 1
+        strokeColor: 'red', // 线条颜色
+        lineJoin: 'round' // 折线拐点连接处样式
+      })
+      that.theMap.add(polyline)
+      this.setFitView(polyline)// 自动调整地图显示范围
     },
-    async getMarkers() {
-      const res = await getMarkers()
-      this.thmarkers = res.data
-      console.log(this.thmarkers)
-      this.loadMarkers(this.thmarkers)
+    loadMarkers(data) {
+      console.log(data)
+      const that = this
+      const markerArray = []
+      // 添加标记
+      for (let i = 0; i < data.length; i++) {
+        // 设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
+        const marker = new AMap.Marker({
+          position: new AMap.LngLat(data[i].lngLat.lng, data[i].lngLat.lat),
+          offset: new AMap.Pixel(-10, -10),
+          icon: '' // that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
+        //  title: '北京'
+        })
+        markerArray.push(marker)
+        that.theMap.add(marker)
+      }
+      this.setFitView(markerArray)// 自动调整地图显示范围
     },
-    showInfoP(e) {
-      console.log(e)
+    setFitView(coords) {
+      // 一组坐标点
+      if (coords.length > 0) {
+        this.theMap.setFitView(coords)
+      } else {
+        this.theMap.setFitView()
+      }
     },
     init(AMap) {
       const that = this
@@ -170,13 +215,13 @@ export default {
         zoom: that.mapZoom, // 设置地图显示的缩放级别
         center: that.myLatlng, // 设置地图中心点坐标
         cursor: 'crosshair',
-        viewMode: '3D',
+        //  viewMode: '3D',
         pitch: 60,
-        rotation: -35,
+        // rotation: -35,
         features: ['bg', 'road', 'point'], // 隐藏默认楼块
         mapStyle: 'amap://styles/light',
-        layers: [new AMap.TileLayer.Satellite(), // 高德默认标准图层
-          buildings],
+        // layers: [new AMap.TileLayer.Satellite(), // 高德默认标准图层
+        //   buildings],
         lang: 'zh_cn' // 设置地图语言类型
 
       }
@@ -237,21 +282,7 @@ export default {
             ',' + event.lnglat.getLat() + ']')
         }
       )
-      if (that.drawType === 'createPolyon') {
-        var marker = new AMap.Marker({
-          position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title: 'helloscreatePolyon'
-        })
-        this.theMap.add(marker)
-        marker.on('click', that.showInfoWin(that.myLatlng, '景德镇地王大厦'))
-      }
-    },
-    showInfoWin(winLatlng, text) {
-      var infoWindow = new AMap.InfoWindow({
-        anchor: 'top-left',
-        content: text
-      })
-      infoWindow.open(this.theMap, winLatlng)
+      // that.loadMarkers(that.markerList)
     },
     showPolygons() {
       const that = this
@@ -336,7 +367,7 @@ export default {
       })
     },
     drawPolygon() {
-      // this.drawType = 'polyon'
+      this.drawType = 'polyon'
       this.mouseTool.polygon({
         strokeColor: '#FF33FF',
         strokeWeight: 6,
@@ -388,44 +419,13 @@ export default {
         strokeOpacity: 0.2,
         fillOpacity: 0.4,
         fillColor: '#1791fc',
-        zIndex: 50,
-        // draggable: true
-
+        zIndex: 50
       })
 
       this.theMap.add(polygon)
-      console.log(polygon)
       // 缩放地图到合适的视野级别
       this.theMap.setFitView([polygon])
-      polygon.on('dragend', function(event) {
-        console.log(event)
 
-        console.log(event.lnglat.Q - event.target.B.path[0].Q)
-        const diffLat = event.lnglat.lat - event.target.B.path[0].lat
-        const diffLng = event.lnglat.lng - event.target.B.path[0].lng
-        const myPlygn = polygons
-
-        for (let i = 0; i < myPlygn.length; i++) {
-          if (diffLat >= 0) {
-            myPlygn[i].lat += Math.abs(diffLat)
-          } else {
-            myPlygn[i].lat -= Math.abs(diffLat)
-          }
-          if (diffLng >= 0) {
-            myPlygn[i].lng += Math.abs(diffLng)
-          } else {
-            myPlygn[i].lng -= Math.abs(diffLng)
-          }
-          // myPlygn[i].lat += diffLat
-          // myPlygn[i].lng += diffLng
-        }
-
-        console.log(myPlygn[0].lng)
-        console.log(event.lnglat.Q)
-        console.log(event.target.B.path[0].Q)
-        that.editedPlygn = { myPolygon: myPlygn, drawType: 'polyon' }
-        that.$emit('drawChange', that.editedPlygn)
-      })
       this.polyEditor = new AMap.PolyEditor(this.theMap, polygon)
 
       this.polyEditor.on('addnode', function(event) {
@@ -443,8 +443,6 @@ export default {
       this.polyEditor.on('end', function(event) {
         console.log('触发事件： end')
         // event.target 即为编辑后的多边形对象
-        console.log(event.target)
-        console.log(polygon)
         that.myPolygon = event.target.B.path
         that.editedPlygn = { myPolygon: event.target.B.path, drawType: 'polyon' }
         that.$emit('drawChange', that.editedPlygn)
@@ -468,19 +466,20 @@ export default {
         var RectangleEditor = new AMap.RectangleEditor(this.theMap, Rectangle)
         RectangleEditor.open()
       })
-    }, loadMarkers(data) {
+    },
+    loadMarkers1(data) {
+      debugger
       // 添加标记
       for (let i = 0; i < data.length; i++) {
         this.addMarker(data[i].lat, data[i].lng)
       }
-      // this.setBounds(data)// 自动调整地图显示范围
     },
     // 添加标记
     addMarker(latlng) {
       // 创建一个 Marker 实例：
       var marker = new AMap.Marker({
-        position: new AMap.LngLat(latlng[0], latlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-        title: '北京'
+        position: new AMap.LngLat(latlng[0], latlng[1]) // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        // title: '北京'
       })
       this.theMap.add(marker)
       this.markersArray.push(marker)
@@ -540,7 +539,7 @@ export default {
     border-radius: 0.4rem;
     box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
     position: fixed;
-    bottom: 12rem;
+    bottom: 4rem;
     right: 1rem;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;

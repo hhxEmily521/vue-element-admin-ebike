@@ -51,3 +51,12 @@ export function updateBike(data) {
     data
   })
 }
+
+export function backEbikeByManual(data) {
+  return request({
+    url: '/bike/backEbikeByManual',
+    method: 'post',
+    data
+  })
+}
+
