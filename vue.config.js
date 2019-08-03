@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const CompressionPlugin = require('compression-webpack-plugin')
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -57,6 +57,27 @@ module.exports = {
     }
   },
   chainWebpack(config) {
+    /* 添加分析工具*/
+    if (process.env.NODE_ENV === 'production') {
+      if (process.env.npm_config_report) {
+        config
+          .plugin('webpack-bundle-analyzer')
+          .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+          .end()
+        config.plugins.delete('prefetch')
+      }
+    }
+    if (process.env.NODE_ENV === 'production') {
+      // 为生产环境修改配置...
+      config.mode = 'production'
+      return {
+        plugins: [new CompressionPlugin({
+          test: /\.js$|\.html$|\.css/, // 匹配文件名
+          threshold: 10240, // 对超过10k的数据进行压缩
+          deleteOriginalAssets: false // 是否删除原文件
+        })]
+      }
+    }
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
 
@@ -123,7 +144,7 @@ module.exports = {
                 commons: {
                   name: 'chunk-commons',
                   test: resolve('src/components'), // can customize your rules
-                  minChunks: 3, //  minimum common number
+                  minChunks: 2, //  minimum common number
                   priority: 5,
                   reuseExistingChunk: true
                 }

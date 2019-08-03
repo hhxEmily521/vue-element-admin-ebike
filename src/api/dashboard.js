@@ -15,8 +15,8 @@ export function getMarkers() {
 }
 export function getCarType() {
   return request({
-    // url: 'https://www.xiaonuan.wang/order/hongxia/',
-    url: '/dashboard/carType',
+    url: 'https://www.xiaonuan.wang/order/hongxia/',
+    // url: '/dashboard/carType',
     method: 'post'
   })
 }
