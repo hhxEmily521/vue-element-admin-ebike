@@ -104,7 +104,7 @@
     <el-dialog class="map-dialog" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
         <el-row>
-          <el-form-item label="名称" prop="名称" placeholder="输入名称">
+          <el-form-item label="名称" prop="title" placeholder="输入名称">
             <el-input v-model="temp.title" />
           </el-form-item>
           <el-form-item label="可容纳" prop="辆" placeholder="(辆)">
@@ -117,7 +117,7 @@
           <!--</el-form-item>-->
           <!--</el-row>-->
           <!--<el-row>-->
-          <el-form-item label="启用状态" prop="状态">
+          <el-form-item label="启用状态" prop="type">
             <el-select v-model="temp.type" class="filter-item" placeholder="请选择">
               <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
@@ -242,10 +242,10 @@ export default {
       dialogPvVisible: false,
       ebikeNumData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        type: [{ required: true, message: '必填项', trigger: 'change' }],
         ebikeNum: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        title: [{ required: true, message: '必填项', trigger: 'blur' }]
       },
       downloadLoading: false,
       editedPlygn: null
@@ -358,17 +358,26 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.address = '上海浦东'
-          this.temp.drawzPolygon = this.editedPlygn.myPolygon
-          createFence(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
+          if (this.editedPlygn) {
+            this.temp.drawzPolygon = this.editedPlygn.myPolygon
+            createFence(this.temp).then(() => {
+              this.list.unshift(this.temp)
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          } else {
             this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
+              title: '提示：',
+              message: '未绘制地图',
+              type: 'error',
               duration: 2000
             })
-          })
+          }
         }
       })
     },
