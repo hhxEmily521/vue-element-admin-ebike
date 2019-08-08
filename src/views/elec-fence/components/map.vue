@@ -18,7 +18,7 @@
         filterable
         remote
         reserve-keyword
-        placeholder="请输入关键词"
+        placeholder="请输入电子围栏地址"
         :remote-method="searchAddress"
         @change="selectTrigger(inptVal)"
       >

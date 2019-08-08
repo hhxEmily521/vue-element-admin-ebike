@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-const CompressionPlugin = require('compression-webpack-plugin')
+// const CompressionPlugin = require('compression-webpack-plugin')
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -71,11 +71,11 @@ module.exports = {
       // 为生产环境修改配置...
       config.mode = 'production'
       return {
-        plugins: [new CompressionPlugin({
-          test: /\.js$|\.html$|\.css/, // 匹配文件名
-          threshold: 10240, // 对超过10k的数据进行压缩
-          deleteOriginalAssets: false // 是否删除原文件
-        })]
+        // plugins: [new CompressionPlugin({
+        //   test: /\.js$|\.html$|\.css/, // 匹配文件名
+        //   threshold: 10240, // 对超过10k的数据进行压缩
+        //   deleteOriginalAssets: false // 是否删除原文件
+        // })]
       }
     }
     config.plugins.delete('preload') // TODO: need test

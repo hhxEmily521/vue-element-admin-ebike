@@ -116,8 +116,8 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 90%; overflow: hidden;">
         <el-col :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="车辆名称" prop="bikeName">
             <el-input v-model="temp.bikeName" />
@@ -129,7 +129,7 @@
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="车辆IMEI" prop="title">
+          <el-form-item label="车辆IMEI" prop="IMEI">
             <el-input v-model="temp.IMEI" :disabled="dialogStatus==='update'" />
           </el-form-item>
         </el-col>
@@ -325,9 +325,10 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        type: [{ required: true, message: '必填项', trigger: 'change' }],
         updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }],
-        bikeName: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        bikeName: [{ required: true, message: '必填项', trigger: 'blur' }],
+        IMEI:[{ required: true, message: '必填项', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -493,6 +494,6 @@ export default {
 <style>
  .my-dialog .el-dialog{
     margin:10vw 10vw !important;
-   width: 80%;
+   width: 50%;
   }
 </style>
