@@ -53,4 +53,10 @@ export function fetchPolyonList(query) {
     params: query
   })
 }
-
+export function getAddress(data) {
+  return request({
+    url: 'https://restapi.amap.com/v3/geocode/regeo?',
+    method: 'get',
+    params: data
+  })
+}
