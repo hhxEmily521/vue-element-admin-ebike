@@ -49,30 +49,30 @@
       />
 
       <el-input
-      v-model="listQuery.min_point "
-      placeholder="会员积分下限"
-      style="width: 200px;"
-      class="filter-item"
-      @keyup.enter.native="handleFilter"
+        v-model="listQuery.min_point "
+        placeholder="会员积分下限"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
       />
       <el-input
-        v-model="listQuery.max_point  "
+        v-model="listQuery.max_point "
         placeholder="会员积分上限"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <!--<el-date-picker-->
-        <!--v-model="listQuery.rentCarEnd"-->
-        <!--class="filter-item"-->
-        <!--style="width:400px"-->
-        <!--type="daterange"-->
-        <!--align="right"-->
-        <!--unlink-panels-->
-        <!--range-separator="-"-->
-        <!--start-placeholder="结算时间开始"-->
-        <!--end-placeholder="结算时间结束"-->
-        <!--:picker-options="pickerOptions"-->
+      <!--v-model="listQuery.rentCarEnd"-->
+      <!--class="filter-item"-->
+      <!--style="width:400px"-->
+      <!--type="daterange"-->
+      <!--align="right"-->
+      <!--unlink-panels-->
+      <!--range-separator="-"-->
+      <!--start-placeholder="结算时间开始"-->
+      <!--end-placeholder="结算时间结束"-->
+      <!--:picker-options="pickerOptions"-->
       <!--/>-->
       <br>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -100,37 +100,37 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="会员ID" prop="id"   align="center" width="180">
+      <el-table-column label="会员ID" prop="id" align="center" width="180">
         <template slot-scope="scope">
           <span>{{ scope.row.wxUserId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="会员OPENID" prop="id"   align="center" width="220">
+      <el-table-column label="会员OPENID" prop="id" align="center" width="220">
         <template slot-scope="scope">
           <span>{{ scope.row.openId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="会员昵称" prop="id"   align="center" width="100">
+      <el-table-column label="会员昵称" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.nickName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="会员昵称" prop="id"   align="center" width="100">
+      <el-table-column label="会员昵称" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.realName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="账户状态" prop="id"   align="center" width="100">
+      <el-table-column label="账户状态" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.status|statusOptionsTypeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="性别" prop="id"   align="center" width="100">
+      <el-table-column label="性别" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.sex?'女':'男' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="性别" prop="id"   align="center" width="100">
+      <el-table-column label="生日" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.birthday }}</span>
         </template>
@@ -162,10 +162,9 @@
         </template>
       </el-table-column>
 
-
       <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-           <span class="link-type">修改：{{ row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span class="link-type">创建：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
       <el-table-column label="时间" min-width="180px">
@@ -174,14 +173,13 @@
         </template>
       </el-table-column>
 
-
-      <!--<el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">-->
-        <!--<template slot-scope="{row}">-->
-          <!--<el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">-->
-            <!--查看详情-->
-          <!--</el-button>-->
-        <!--</template>-->
-      <!--</el-table-column>-->
+      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">
+            查看详情
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -190,149 +188,6 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
-
-    <el-dialog
-      title="退款审核"
-      :visible.sync="dialogFormVisible"
-      style=" min-width: 200px;"
-      class="my-dialog"
-    >
-
-      <div :data="temp" style="margin-left: 20px">
-        <p>基本信息</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 80px">退款单编号:</td>
-            <td style="width:350px">{{ temp.id }}</td>
-            <td style="width: 80px">会员ID:</td>
-            <td style="width: 350px">{{ temp.vipId }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 80px">车辆编号:</td>
-            <td style="width:350px">{{ temp.bikeId }}</td>
-            <td style="width: 80px">会员手机:</td>
-            <td style="width: 350px">{{ temp.vipNumber }}</td>
-          </tr>
-          <br>
-
-          <tr>
-            <td style="width: 80px">创建时间:</td>
-            <td style="width:350px">{{ temp.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-            <td style="width: 80px">修改时间:</td>
-            <td style="width: 350px">{{ temp.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-          </tr>
-
-        </table>
-
-        <p>订单详情</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-
-          <tr>
-            <td style="width: 80px">订单编号:</td>
-            <td style="width:350px">{{ temp.orderId }}</td>
-            <td style="width: 80px">订单金额:</td>
-            <td style="width: 350px">{{ temp.orderMoney }}</td>
-          </tr>
-          <br>
-
-          <tr>
-            <td style="width: 80px">优惠金额:</td>
-            <td style="width:350px">{{ temp.preferentialMoney }}</td>
-            <td style="width: 80px">实付金额:</td>
-            <td style="width: 350px">{{ temp.trueMoney }}</td>
-          </tr>
-          <br>
-
-          <tr>
-            <td style="width: 80px">订单状态:</td>
-            <td style="width:350px">{{ temp.orderType  }} orderTypeFilter</td>
-            <td style="width: 80px">会员账户:</td>
-            <td style="width: 350px">{{ temp.vipAccount }}</td>
-          </tr>
-          <br>
-
-          <tr>
-            <td style="width: 130px">订单开始时间:</td>
-            <td style="width:350px">{{ temp.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-            <td style="width: 80px">会员等级:</td>
-            <td style="width: 350px">{{ temp.vipLevel }}</td>
-
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">订单支付时间:</td>
-            <td style="width:350px">{{ temp.payTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-            <td style="width: 130px">订单结算时间:</td>
-            <td style="width: 350px">{{ temp.rentCarEnd | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-          </tr>
-        </table>
-
-        <p>退款详情</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">退款单编号:</td>
-            <td style="width:350px">{{ temp.backMoneyId }}</td>
-            <td style="width: 130px">退款状态:</td>
-            <td style="width: 350px">{{ temp.customStatus | customStatusFilter }}</td>
-            <!--<td style="width:350px">{{temp.orderType | orderTypeFilter }}</td>-->
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">退款金额:</td>
-            <td style="width:350px">{{ temp.backMoney }}</td>
-            <td style="width: 130px">退款原因:</td>
-            <td style="width:350px">{{ temp.backMoneyReason | backMoneyReasonFilter }}</td>
-          </tr>
-        </table>
-
-        <p>车辆信息</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">车辆最后经度:</td>
-            <td style="width:350px">{{ temp.logitude }}</td>
-            <td style="width: 130px">车辆最后纬度:</td>
-            <td style="width: 350px">{{ temp.latiude }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">车辆最后电量:</td>
-            <td style="width:350px">{{ temp.electrucity }}</td>
-            <!--<td style="width: 130px">车辆停靠电子围栏:</td>
-            <td style="width: 350px">{{temp.elecFence}}</td>-->
-          </tr>
-        </table>
-
-        <p>操作人详情</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">操作人ID:</td>
-            <td style="width:350px">{{ temp.operateId }}</td>
-            <td style="width: 130px">操作人电话:</td>
-            <td style="width: 350px">{{ temp.operateMobile }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">操作人角色:</td>
-            <td style="width:350px">{{ temp.operateRole | operateRoleFilter }}</td>
-
-          </tr>
-        </table>
-
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <!-- <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-        <el-button type="primary" @click="dialogFormVisible = false">
-          确认
-        </el-button>
-      </div>
-      <!--</el-col>-->
-      <div />
-    </el-dialog>
-
     <!--<el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel"/>
@@ -353,46 +208,76 @@
         <p>基本信息</p><br>
         <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
           <tr>
-            <td style="width: 80px">退款单编号:</td>
-            <td style="width:350px">{{ temp.id }}</td>
-            <td style="width: 80px">会员ID:</td>
-            <td style="width: 350px">{{ temp.vipId }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 80px">车辆编号:</td>
-            <td style="width:350px">{{ temp.bikeId }}</td>
-            <td style="width: 80px">会员手机:</td>
-            <td style="width: 350px">{{ temp.vipNumber }}</td>
-          </tr>
-          <br>
 
-          <tr>
-            <td style="width: 80px">创建时间:</td>
-            <td style="width:350px">{{ temp.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
-            <td style="width: 80px">修改时间:</td>
-            <td style="width: 350px">{{ temp.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
+            <td style="width: 80px">会员ID:</td>
+            <td style="width: 350px">{{ temp.wxUserId }}</td>
+            <td style="width: 80px">手机号:</td>
+            <td style="width:350px">{{ temp.phone }}</td>
           </tr>
+          <br>
+          <tr>
+            <td style="width: 80px">会员积分:</td>
+            <td style="width:350px">{{ temp.points }}</td>
+            <td style="width: 80px">会员等级:</td>
+            <td style="width: 350px">{{ temp.level }}</td>
+          </tr>
+          <br>
+          <tr>
+            <td style="width: 80px">会员类型:</td>
+            <td style="width:350px">{{ temp.userType |customStatusFilter}}</td>
+            <td style="width: 80px">会员订单:</td>
+            <td style="width: 350px">{{ temp.orderNum }}</td>
+          </tr>
+          <br>
+          <!--<tr>-->
+            <!--<td style="width: 80px">创建时间:</td>-->
+            <!--<td style="width:350px">{{ temp.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
+            <!--<td style="width: 80px">修改时间:</td>-->
+            <!--<td style="width: 350px">{{ temp.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
+          <!--</tr>-->
 
         </table>
-        <p>订单详情</p><br>
+        <p>账户信息</p><br>
         <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
           <tr>
-            <td style="width: 80px">订单编号:</td>
-            <td style="width:350px">{{ temp.orderId }}</td>
-            <td style="width: 80px">订单金额:</td>
-            <td style="width: 350px">{{ temp.orderMoney }}</td>
+            <td style="width: 80px">账户余额:</td>
+            <td style="width:350px">{{ temp.balance }}</td>
+            <td style="width: 80px">会员共计已消费金额:</td>
+            <td style="width: 350px">{{ temp.money }}</td>
           </tr>
           <br>
-
           <tr>
-            <td style="width: 80px">优惠金额:</td>
-            <td style="width:350px">{{ temp.preferentialMoney }}</td>
-            <td style="width: 80px">实付金额:</td>
-            <td style="width: 350px">{{ temp.trueMoney }}</td>
+            <td style="width: 80px">押金</td>
+            <td style="width:350px"></td>
+            <td style="width: 80px">租金</td>
+            <td style="width: 350px"></td>
           </tr>
           <br>
-
+          <tr>
+            <td style="width: 80px">押金支付金额:</td>
+            <td style="width:350px">{{ temp.promiseMoney }}</td>
+            <td style="width: 80px">租金支付金额:</td>
+            <td style="width:350px">{{ temp.rentalPayMoney }}</td>
+            <td style="width: 80px">有效期开始时间:</td>
+            <td style="width:350px">{{ temp.canUseStartTime }}</td>
+          </tr>
+          <br>
+          <tr>
+            <td style="width: 80px">押金支付时间:</td>
+            <td style="width: 350px">{{ temp.promiseTime }}</td>
+            <td style="width: 80px">租金支付时间:</td>
+            <td style="width: 350px">{{ temp.rentalPayTime }}</td>
+            <td style="width: 80px">有效期结束时间:</td>
+            <td style="width:350px">{{ temp.canUseEndTime }}</td>
+          </tr>
+          <br>
+          <tr>
+            <td style="width: 80px">支付流水号:</td>
+            <td style="width:350px">{{ temp.promisePayId }}</td>
+            <td style="width: 80px">支付流水号:</td>
+            <td style="width: 350px">{{ temp.rentalPayId }}</td>
+          </tr>
+          <br>
           <tr>
             <td style="width: 80px">订单状态:</td>
             <!--<td style="width:350px">{{ temp.orderType | orderTypeFilter }}</td>-->
@@ -405,7 +290,7 @@
             <td style="width: 130px">订单开始时间:</td>
             <td style="width:350px">{{ temp.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
             <td style="width: 80px">会员等级:</td>
-            <td style="width: 350px">{{ temp.vipLevel |customStatusFilter}}</td>
+            <td style="width: 350px">{{ temp.vipLevel |customStatusFilter }}</td>
 
           </tr>
           <br>
@@ -416,55 +301,6 @@
             <td style="width: 350px">{{ temp.rentCarEnd | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
           </tr>
         </table>
-        <p>退款详情</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">退款单编号:</td>
-            <td style="width:350px">{{ temp.backMoneyId }}</td>
-            <td style="width: 130px">退款状态:</td>
-            <td style="width: 350px">{{ temp.customStatus | customStatusFilter }}</td>
-            <!--<td style="width:350px">{{temp.orderType | orderTypeFilter }}</td>-->
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">退款金额:</td>
-            <td style="width:350px">{{ temp.backMoney }}</td>
-            <td style="width: 130px">退款原因:</td>
-            <td style="width:350px">{{ temp.backMoneyReason | backMoneyReasonFilter }}</td>
-          </tr>
-        </table>
-        <p>车辆信息</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">车辆最后经度:</td>
-            <td style="width:350px">{{ temp.logitude }}</td>
-            <td style="width: 130px">车辆最后纬度:</td>
-            <td style="width: 350px">{{ temp.latiude }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">车辆最后电量:</td>
-            <td style="width:350px">{{ temp.electrucity }}</td>
-
-          </tr>
-        </table>
-
-        <p>操作人详情</p><br>
-        <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
-          <tr>
-            <td style="width: 130px">操作人ID:</td>
-            <td style="width:350px">{{ temp.operateId }}</td>
-            <td style="width: 130px">操作人电话:</td>
-            <td style="width: 350px">{{ temp.operateMobile }}</td>
-          </tr>
-          <br>
-          <tr>
-            <td style="width: 130px">操作人角色:</td>
-            <td style="width:350px">{{ temp.operateRole | operateRoleFilter }}</td>
-
-          </tr>
-        </table>
-
       </div>
 
       <div slot="footer" class="dialog-footer">
@@ -491,7 +327,7 @@ import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-dir
 
 const statusOptions = [
   { key: '0', display_name: '正常' },
-  { key: '1', display_name: '冻结' },
+  { key: '1', display_name: '冻结' }
 ]
 
 const statusOptionsKeyValue = statusOptions.reduce((acc, cur) => {
@@ -511,7 +347,7 @@ const operateRoleKeyValue = operateRoleOptions.reduce((acc, cur) => {
 
 const customStatusOptions = [
   { key: '0', display_name: '一般会员' },
-  { key: '1', display_name: '充值会员' },
+  { key: '1', display_name: '充值会员' }
 
 ]
 
@@ -620,14 +456,14 @@ export default {
       listLoading: true,
       listQuery: { // 订单参数
         wxUserId: '',
-          phone: '',
-          level: '',
+        phone: '',
+        level: '',
         useType: 'using',
         duringDay: '',
-          start_time:'',
-          end_time:'',
-          max_point:'',
-          min_point:'',
+        start_time: '',
+        end_time: '',
+        max_point: '',
+        min_point: '',
         page: 1,
         limit: 20,
         importance: undefined,
@@ -689,8 +525,8 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.start_time=this.listQuery.duringDay[0]
-      this.listQuery.end_time=this.listQuery.duringDay[1]
+      this.listQuery.start_time = this.listQuery.duringDay[0]
+      this.listQuery.end_time = this.listQuery.duringDay[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

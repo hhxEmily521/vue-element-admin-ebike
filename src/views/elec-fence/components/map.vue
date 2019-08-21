@@ -132,7 +132,7 @@ export default {
       } else {
         var marker = new AMap.Marker({
           position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title: '景德镇地王大厦'
+          title: polygonList['title']
         })
         that.theMap.add(marker)
         // that.editRectangle(that.polygons)
@@ -262,6 +262,11 @@ export default {
         for (const plgn in polygons) {
           path.push([polygons[plgn].lng, polygons[plgn].lat])
         }
+        var marker = new AMap.Marker({
+          position: new AMap.LngLat(polygons[0].lng, polygons[0].lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title: '景德镇地王大厦'
+        })
+        that.theMap.add(marker)
         var polygon = new AMap.Polygon({
           path: path,
           strokeColor: '#FF3300',
