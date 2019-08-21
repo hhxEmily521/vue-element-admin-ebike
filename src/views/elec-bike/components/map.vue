@@ -187,8 +187,8 @@ export default {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(data[i].lngLat.lng, data[i].lngLat.lat),
           offset: new AMap.Pixel(-10, -10),
-          icon: '' // that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
-        //  title: '北京'
+          icon: '', // that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
+         title: data[i].address
         })
         markerArray.push(marker)
         that.theMap.add(marker)

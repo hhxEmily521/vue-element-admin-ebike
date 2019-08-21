@@ -22,3 +22,10 @@ export function logout() {
     method: 'post'
   })
 }
+export function wxUser() {
+  return request({
+    url: '/wxUser/list',
+    method: 'post'
+  })
+}
+

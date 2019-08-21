@@ -43,7 +43,7 @@
       </el-select>
 
       <el-date-picker
-        v-model="listQuery.duringDay"
+        v-model="listQuery.rentCarStart"
         class="filter-item"
         style="width: 300px"
         type="daterange"
@@ -674,6 +674,9 @@ export default {
     },
     getList() {
       this.listLoading = true
+      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      this.listQuery.rentCarStart= this.listQuery.rentCarStart[0]+'_'+this.listQuery.rentCarStart[1]
+      this.listQuery.rentCarEnd= this.listQuery.rentCarEnd[0]+'_'+this.listQuery.rentCarEnd[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

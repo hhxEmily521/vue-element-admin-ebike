@@ -45,7 +45,7 @@ import { getCarType, getMarkers } from '@/api/dashboard'
 import rMenu from '../../../utils/rMenu.js'
 import { MP } from '@/utils/tmap.js'
 import { mapGetters } from 'vuex'
-
+var infoWindow;
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
@@ -132,9 +132,9 @@ export default {
       } else {
         var marker = new AMap.Marker({
           position: new AMap.LngLat(that.myLatlng[0], that.myLatlng[1]), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title: 'hellos'
+          title: '景德镇地王大厦'
         })
-        this.theMap.add(marker)
+        that.theMap.add(marker)
         // that.editRectangle(that.polygons)
       }
     }).catch(err => {
@@ -243,11 +243,11 @@ export default {
           title: 'helloscreatePolyon'
         })
         this.theMap.add(marker)
-        marker.on('click', that.showInfoWin(that.myLatlng, '景德镇地王大厦'))
+        marker.on('mouseover', that.showInfoWin(that.myLatlng, '景德镇地王大厦'))
       }
     },
     showInfoWin(winLatlng, text) {
-      var infoWindow = new AMap.InfoWindow({
+      infoWindow = new AMap.InfoWindow({
         anchor: 'top-left',
         content: text
       })

@@ -342,6 +342,7 @@ export default {
     },
     getList() {
       this.listLoading = true
+      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

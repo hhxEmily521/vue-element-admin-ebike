@@ -2,21 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.id"
+        v-model="listQuery.wxUserId"
         placeholder="会员id"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <!--<el-input-->
-        <!--v-model="listQuery.bikeId"-->
-        <!--placeholder="车辆编号"-->
-        <!--style="width: 200px;"-->
-        <!--class="filter-item"-->
-        <!--@keyup.enter.native="handleFilter"-->
-      <!--/>-->
       <el-input
-        v-model="listQuery.vipNumber"
+        v-model="listQuery.phone"
         placeholder="会员手机"
         style="width: 200px;"
         class="filter-item"
@@ -34,7 +27,7 @@
       <el-label>会员类型</el-label>
       <el-select
         v-model="listQuery.customStatus"
-        placeholder="退款状态"
+        placeholder="会员类型"
         clearable
         class="filter-item"
         style="width: 130px"
@@ -54,12 +47,20 @@
         end-placeholder="账号注册结束时间"
         :picker-options="pickerOptions"
       />
+
       <el-input
-      v-model="listQuery.bikeId"
+      v-model="listQuery.min_point "
       placeholder="会员积分下限"
       style="width: 200px;"
       class="filter-item"
       @keyup.enter.native="handleFilter"
+      />
+      <el-input
+        v-model="listQuery.max_point  "
+        placeholder="会员积分上限"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
       />
       <!--<el-date-picker-->
         <!--v-model="listQuery.rentCarEnd"-->
@@ -99,77 +100,88 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="退款单编号" prop="id" sortable="custom" align="center" width="100">
+      <el-table-column label="会员ID" prop="id"   align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.wxUserId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号" prop="bikeId" sortable="custom" align="center" width="80">
+      <el-table-column label="会员OPENID" prop="id"   align="center" width="220">
         <template slot-scope="scope">
-          <span>{{ scope.row.bikeId }}</span>
+          <span>{{ scope.row.openId }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="订单编号" prop="bikeId" sortable="custom" align="center" width="80">
+      <el-table-column label="会员昵称" prop="id"   align="center" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderId }}</span>
+          <span>{{ scope.row.nickName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="会员昵称" prop="id"   align="center" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.realName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="账户状态" prop="id"   align="center" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status|statusOptionsTypeFilter }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="性别" prop="id"   align="center" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.sex?'女':'男' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="性别" prop="id"   align="center" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.birthday }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="会员" min-width="190px">
+      <el-table-column label="会员电话" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">会员ID：{{ row.vipId }}<br></span>
-          <span class="link-type">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
+          <span class="link-type">{{ row.phone }}  <i icon="el-icon-copy-document" /></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户类型" min-width="190px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.userType|customStatusFilter }}  <i icon="el-icon-copy-document" /></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="已消费" min-width="190px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.money }}  <i icon="el-icon-copy-document" /></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="余额" min-width="190px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.balance }}  <i icon="el-icon-copy-document" /></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="订单数" min-width="190px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.orderNum }}  <i icon="el-icon-copy-document" /></span>
         </template>
       </el-table-column>
 
-      <el-table-column label="金额（元）" min-width="190px">
-        <template slot-scope="{row}">
-          <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
-          <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
-          <span class="link-type">退款金额：{{ row.backMoney }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="退款状态" min-width="100px">
-        <template slot-scope="{row}">
-          <!--  <el-tag>{{ row.orderType | orderTypeFilter }}</el-tag>-->
-          <span class="link-type">{{ row.customStatus | customStatusFilter }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="退款原因" min-width="100px">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.backMoneyReason | backMoneyReasonFilter }}</span>
-        </template>
-      </el-table-column>
 
       <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">创建：{{ row.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">开始：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">结束：{{ row.rentCarEnd | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">修改：{{ row.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+           <span class="link-type">修改：{{ row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
-
-      <el-table-column label="订单备注" min-width="100px">
+      <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-          <el-tag>{{ row.remarks }}</el-tag>
+          <span class="link-type">修改：{{ row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
-            审核
-          </el-button>
-          <el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">
-            查看详情
-          </el-button>
 
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">-->
+        <!--<template slot-scope="{row}">-->
+          <!--<el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">-->
+            <!--查看详情-->
+          <!--</el-button>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
     </el-table>
     <pagination
       v-show="total>0"
@@ -234,7 +246,7 @@
 
           <tr>
             <td style="width: 80px">订单状态:</td>
-            <td style="width:350px">{{ temp.orderType | orderTypeFilter }}</td>
+            <td style="width:350px">{{ temp.orderType  }} orderTypeFilter</td>
             <td style="width: 80px">会员账户:</td>
             <td style="width: 350px">{{ temp.vipAccount }}</td>
           </tr>
@@ -383,7 +395,7 @@
 
           <tr>
             <td style="width: 80px">订单状态:</td>
-            <td style="width:350px">{{ temp.orderType | orderTypeFilter }}</td>
+            <!--<td style="width:350px">{{ temp.orderType | orderTypeFilter }}</td>-->
             <td style="width: 80px">会员账户:</td>
             <td style="width: 350px">{{ temp.vipAccount }}</td>
           </tr>
@@ -393,7 +405,7 @@
             <td style="width: 130px">订单开始时间:</td>
             <td style="width:350px">{{ temp.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>
             <td style="width: 80px">会员等级:</td>
-            <td style="width: 350px">{{ temp.vipLevel }}</td>
+            <td style="width: 350px">{{ temp.vipLevel |customStatusFilter}}</td>
 
           </tr>
           <br>
@@ -477,15 +489,12 @@ import clip from '@/utils/clipboard' // use clipboard directly
 import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-directive
 // type : normal | noElectric | worthless | problem
 
-const orderTypeOptions = [
-  { key: 'all', display_name: '全部' },
-  { key: 'unlock', display_name: '已解锁' },
-  { key: 'waitPayMoney', display_name: '等待付款' },
-  { key: 'finish', display_name: '交易完成' }
-
+const statusOptions = [
+  { key: '0', display_name: '正常' },
+  { key: '1', display_name: '冻结' },
 ]
 
-const orderTypeKeyValue = orderTypeOptions.reduce((acc, cur) => {
+const statusOptionsKeyValue = statusOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
@@ -501,8 +510,8 @@ const operateRoleKeyValue = operateRoleOptions.reduce((acc, cur) => {
 }, {})
 
 const customStatusOptions = [
-  { key: 'applyBackMoney', display_name: '一般会员' },
-  { key: 'agreeBackMoney', display_name: '充值会员' },
+  { key: '0', display_name: '一般会员' },
+  { key: '1', display_name: '充值会员' },
 
 ]
 
@@ -558,8 +567,8 @@ export default {
     // useTypeFilter(type) {
     //   return useTypeKeyValue[type]
     // },
-    orderTypeFilter(type) {
-      return orderTypeKeyValue[type]
+    statusOptionsTypeFilter(type) {
+      return KeyValue[type]
     },
     customStatusFilter(type) {
       return customStatusKeyValue[type]
@@ -610,12 +619,15 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: { // 订单参数
-        id: '',
-        orderType: 'all',
-        customStatus: 'all',
-        isMoving: '',
+        wxUserId: '',
+          phone: '',
+          level: '',
         useType: 'using',
         duringDay: '',
+          start_time:'',
+          end_time:'',
+          max_point:'',
+          min_point:'',
         page: 1,
         limit: 20,
         importance: undefined,
@@ -632,12 +644,12 @@ export default {
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      orderTypeOptions,
+      statusOptions,
       customStatusOptions,
       isMovingOptions,
       useTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
+      // statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         /* id: undefined,*/
@@ -677,6 +689,8 @@ export default {
     },
     getList() {
       this.listLoading = true
+      this.listQuery.start_time=this.listQuery.duringDay[0]
+      this.listQuery.end_time=this.listQuery.duringDay[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

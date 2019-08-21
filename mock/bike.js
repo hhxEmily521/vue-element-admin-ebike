@@ -42,6 +42,7 @@ for (let i = 0; i < count; i++) {
     updateTime: +Mock.Random.date('T'),
     changeBatteryTime: +Mock.Random.date('T'),
     display_time: '@datetime',
+    address: '@region@province@city@county',
     pageviews: '@integer(300, 5000)',
     lngLat: { 'lng': 117.211855 + addnum, 'lat': 29.297727 + addnum },
     polyLine: [

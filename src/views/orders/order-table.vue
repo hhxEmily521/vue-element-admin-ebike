@@ -702,6 +702,10 @@ export default {
     },
     getList() {
       this.listLoading = true
+      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      this.listQuery.rentCarStart= this.listQuery.rentCarStart[0]+'_'+this.listQuery.rentCarStart[1]
+      this.listQuery.rentCarEnd= this.listQuery.rentCarEnd[0]+'_'+this.listQuery.rentCarEnd[1]
+      this.listQuery.payTime= this.listQuery.payTime[0]+'_'+this.listQuery.payTime[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

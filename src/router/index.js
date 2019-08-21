@@ -173,6 +173,38 @@ export const asyncRoutes = [
   //   ]
   // },
   {
+    path: '/customer',
+    component: Layout,
+    redirect: '/customer/customer-table',
+    // alwaysShow: true, // will always show the root menu
+    name: 'order',
+    meta: {
+      title: '会员',
+      icon: 'ecustom',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'customerTable',
+        component: () => import('@/views/customer/customer-table'),
+        name: 'orderTable',
+        meta: {
+          title: '会员管理',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'orderTable',
+        component: () => import('@/views/orders/order-table'),
+        name: 'orderTable',
+        meta: {
+          title: '订单管理',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+  {
     path: '/order',
     component: Layout,
     redirect: '/orders/order-table',
