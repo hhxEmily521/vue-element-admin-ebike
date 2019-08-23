@@ -224,16 +224,16 @@
           <br>
           <tr>
             <td style="width: 80px">会员类型:</td>
-            <td style="width:350px">{{ temp.userType |customStatusFilter}}</td>
+            <td style="width:350px">{{ temp.userType |customStatusFilter }}</td>
             <td style="width: 80px">会员订单:</td>
             <td style="width: 350px">{{ temp.orderNum }}</td>
           </tr>
           <br>
           <!--<tr>-->
-            <!--<td style="width: 80px">创建时间:</td>-->
-            <!--<td style="width:350px">{{ temp.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
-            <!--<td style="width: 80px">修改时间:</td>-->
-            <!--<td style="width: 350px">{{ temp.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
+          <!--<td style="width: 80px">创建时间:</td>-->
+          <!--<td style="width:350px">{{ temp.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
+          <!--<td style="width: 80px">修改时间:</td>-->
+          <!--<td style="width: 350px">{{ temp.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</td>-->
           <!--</tr>-->
 
         </table>
@@ -248,9 +248,9 @@
           <br>
           <tr>
             <td style="width: 80px">押金</td>
-            <td style="width:350px"></td>
+            <td style="width:350px" />
             <td style="width: 80px">租金</td>
-            <td style="width: 350px"></td>
+            <td style="width: 350px" />
           </tr>
           <br>
           <tr>
@@ -302,7 +302,10 @@
           </tr>
         </table>
       </div>
-
+      <p>成长轨迹</p><br>
+      <div v-if="lineChartAllData" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <line-chart :chart-data="lineChartData" />
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogBackMoney = false">
           关闭页面
@@ -317,7 +320,8 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, updateBike } from '@/api/backMoney'
+import LineChart from './components/LineChart'
+import { wxUser, fetchPv, createBike, updateBike } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -389,7 +393,7 @@ const useTypeOptions = [
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, LineChart },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -404,7 +408,7 @@ export default {
     //   return useTypeKeyValue[type]
     // },
     statusOptionsTypeFilter(type) {
-      return KeyValue[type]
+      return statusOptionsKeyValue[type]
     },
     customStatusFilter(type) {
       return customStatusKeyValue[type]
@@ -423,6 +427,7 @@ export default {
   },
   data() {
     return {
+      lineChartData: undefined,
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -527,10 +532,10 @@ export default {
       this.listLoading = true
       this.listQuery.start_time = this.listQuery.duringDay[0]
       this.listQuery.end_time = this.listQuery.duringDay[1]
-      fetchList(this.listQuery).then(response => {
+      wxUser(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-
+        this.lineChartAllData = response.data.growData
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false

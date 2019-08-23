@@ -45,7 +45,7 @@ import { getCarType, getMarkers } from '@/api/dashboard'
 import rMenu from '../../../utils/rMenu.js'
 import { MP } from '@/utils/tmap.js'
 import { mapGetters } from 'vuex'
-var infoWindow;
+var infoWindow
 export default {
   name: 'Map',
   props: { markers: { type: Array }, markerIdx: { type: Number }, polygons: { type: Array }, drawType: { type: String }},
@@ -56,6 +56,7 @@ export default {
   },
   data() {
     return {
+      loadMap: false,
       errNetwork: false,
       inptVal: '',
       resOptions: [],
@@ -75,15 +76,18 @@ export default {
       myPolygon: [],
       polyEditor: null,
       mapLd: false,
-      editedPlygn: null
+      editedPlygn: null,
+      infoWindow: undefined
     }
   },
   watch: {
-    polygonList() {
-      if (this.theMap) {
-        this.removeAllOverlay()
+    polygonList(val) {
+      if (val && this.loadMap) {
+        if (this.theMap) {
+          this.removeAllOverlay()
+        }
+        this.showPolygons()
       }
-      this.showPolygons()
     },
     myPolygon(val) {
       // this.$emit('drawChange', { myPolygon: val, drawType: this.drawType })
@@ -123,6 +127,8 @@ export default {
   mounted() {
     const that = this
     MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
+      that.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) })
+      that.loadMap = true
       that.errNetwork = false
       that.init(AMap)
       if (that.drawType === 'polyon') {
@@ -266,7 +272,17 @@ export default {
           position: new AMap.LngLat(polygons[0].lng, polygons[0].lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
           title: '景德镇地王大厦'
         })
+        var markerClick = function(e) {
+          that.infoWindow.setContent(e.target.content)
+          that.infoWindow.open(this.theMap, e.target.getPosition())
+        }
+        marker.content = '我是' + polygons[0].lng + polygons[0].lat + 'Marker'
+        marker.on('click', markerClick)
+        marker.emit('click', { target: marker })
         that.theMap.add(marker)
+
+        const point = [polygons[0].lng, polygons[0].lat]
+        marker.on('mouseover', that.showInfoWin(point, '景德镇地王大厦'))
         var polygon = new AMap.Polygon({
           path: path,
           strokeColor: '#FF3300',
@@ -393,7 +409,7 @@ export default {
         strokeOpacity: 0.2,
         fillOpacity: 0.4,
         fillColor: '#1791fc',
-        zIndex: 50,
+        zIndex: 50
         // draggable: true
 
       })
