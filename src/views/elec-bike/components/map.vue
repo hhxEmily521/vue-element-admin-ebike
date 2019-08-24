@@ -70,6 +70,7 @@ export default {
   },
   data() {
     return {
+      loadMap: false,
       errNetwork: false,
       inptVal: '',
       resOptions: [],
@@ -94,16 +95,26 @@ export default {
   },
   watch: {
     polylineList(val) {
-      this.removeAllOverlay()
-      this.loadPolyline(val)
+      console.log(val)
+      if (val && this.loadMap) {
+        if (this.theMap) {
+          this.removeAllOverlay()
+        }
+        this.loadPolyline(val)
+
+      }
     },
     markerList(val) {
-      this.removeAllOverlay()
-      this.loadMarkers(val)
+      if (val) {
+        this.removeAllOverlay()
+        this.loadMarkers(val)
+      }
     },
-    polygonList() {
-      this.removeAllOverlay()
-      this.showPolygons()
+    polygonList(val) {
+      if (val) {
+        this.removeAllOverlay()
+        this.showPolygons()
+      }
     },
     myPolygon(val) {
       // this.$emit('drawChange', { myPolygon: val, drawType: this.drawType })
@@ -141,6 +152,7 @@ export default {
   mounted() {
     const that = this
     MP('f69c443f1f4d2801d4bfb6d31841705b').then(function(AMap) {
+      that.loadMap = true
       that.errNetwork = false
       that.init(AMap)
       if (that.drawType === 'polyon') {
@@ -188,7 +200,7 @@ export default {
           position: new AMap.LngLat(data[i].lngLat.lng, data[i].lngLat.lat),
           offset: new AMap.Pixel(-10, -10),
           icon: '', // that.carType[data[i].type].imgUrl, // 根据车辆类型显示图标
-         title: data[i].address
+          title: data[i].address
         })
         markerArray.push(marker)
         that.theMap.add(marker)

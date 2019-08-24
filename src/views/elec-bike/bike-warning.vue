@@ -247,7 +247,6 @@ export default {
         IMEI: '',
         bikeType: 'all',
         isMoving: '',
-        useType: 'using',
         minvoltage: undefined,
         maxvoltage: undefined,
         duringDay: '',

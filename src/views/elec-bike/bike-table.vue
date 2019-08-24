@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.id" placeholder="车辆编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.bikeName" placeholder="车辆名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.bikeName" placeholder="二维码编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.bikeType" placeholder="车辆状态" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in bikeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
@@ -28,7 +28,7 @@
         <el-option v-for="item in useTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <!--<el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
-        <!--<el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
+      <!--<el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
       <!--</el-select>-->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -61,7 +61,7 @@
           <span>{{ scope.row.IMEI }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆名称" min-width="150px">
+      <el-table-column label="二维码编号" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
         </template>
@@ -109,7 +109,7 @@
             修改
           </el-button>
           <!--<el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">-->
-            <!--删除-->
+          <!--删除-->
           <!--</el-button>-->
         </template>
       </el-table-column>
@@ -199,7 +199,7 @@ import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-dir
 
 const bikeTypeOptions = [
   { key: 'noElectric', display_name: '空电' },
-  { key: 'all', display_name: '全部' },
+  // { key: 'all', display_name: '全部' },
   { key: 'worthless', display_name: '报废' },
   { key: 'normal', display_name: '正常' },
   { key: 'problem', display_name: '故障' },
@@ -220,6 +220,7 @@ const isMovingKeyValue = isMovingOptions.reduce((acc, cur) => {
   return acc
 }, {})
 const useTypeOptions = [
+  // { key: 'all', display_name: '全部' },
   { key: 'using', display_name: '使用中' },
   { key: 'notUse', display_name: '空闲' }
 ]
@@ -288,9 +289,9 @@ export default {
       listLoading: true,
       listQuery: {
         id: '',
-        bikeType: 'all',
+        bikeType: '',
         isMoving: '',
-        useType: 'using',
+        useType: '',
         duringDay: '',
         page: 1,
         limit: 20,
@@ -328,7 +329,7 @@ export default {
         type: [{ required: true, message: '必填项', trigger: 'change' }],
         updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }],
         bikeName: [{ required: true, message: '必填项', trigger: 'blur' }],
-        IMEI:[{ required: true, message: '必填项', trigger: 'blur' }]
+        IMEI: [{ required: true, message: '必填项', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -342,7 +343,11 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      // this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      this.listQuery.startTime = this.listQuery.duringDay[0]
+      this.listQuery.endTime = this.listQuery.duringDay[1]
+      this.listQuery.duringDay = ''
+
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
@@ -402,9 +407,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createBike(this.temp).then(() => {
+          // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          // this.temp.author = 'vue-element-admin'
+          createBike(this.temp).then((res) => {
+            this.temp.id = res.data.id
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({

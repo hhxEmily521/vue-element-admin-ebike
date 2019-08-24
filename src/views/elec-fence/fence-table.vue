@@ -223,6 +223,7 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
+        totalBike: '',
         remark: '',
         timestamp: new Date(),
         title: '',
@@ -339,6 +340,7 @@ export default {
       this.temp = {
         id: undefined,
         timestamp: new Date(),
+        totalBike: '',
         title: '',
         type: '',
         drawzPolygon: [],
@@ -356,7 +358,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           const para = {
             location: this.editedPlygn.myPolygon[0].lat + ',' + this.editedPlygn.myPolygon[0].lng,
             output: 'json',
@@ -366,10 +368,12 @@ export default {
             console.log(res)
           })
           this.temp.address = '上海浦东'
+          const that = this
           if (this.editedPlygn) {
             this.temp.drawzPolygon = this.editedPlygn.myPolygon
-            createFence(this.temp).then(() => {
-              this.list.unshift(this.temp)
+            createFence(this.temp).then((res) => {
+              that.temp.id = res.data.id
+              this.list.unshift(that.temp)
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
