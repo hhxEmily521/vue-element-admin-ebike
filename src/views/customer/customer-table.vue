@@ -24,7 +24,7 @@
       />
 
       <br>
-      <el-label>会员类型</el-label>
+      <span>会员类型</span>
       <el-select
         v-model="listQuery.customStatus"
         placeholder="会员类型"
@@ -303,7 +303,7 @@
         </table>
       </div>
       <p>成长轨迹</p><br>
-      <div v-if="lineChartAllData" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <div v-if="lineChartData" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
         <line-chart :chart-data="lineChartData" />
       </div>
       <div slot="footer" class="dialog-footer">
@@ -535,7 +535,7 @@ export default {
       wxUser(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-        this.lineChartAllData = response.data.growData
+        this.lineChartData = response.data.growData
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false

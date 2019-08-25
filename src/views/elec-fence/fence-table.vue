@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { fetchList, fetchEbikeNum, createFence, getAddress, updateFence, delFence } from '@/api/fence'
+import { fetchList, fetchEbikeNum, createFence, updateFence, delFence } from '@/api/fence'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -359,18 +359,11 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          const para = {
-            location: this.editedPlygn.myPolygon[0].lat + ',' + this.editedPlygn.myPolygon[0].lng,
-            output: 'json',
-            key: 'f69c443f1f4d2801d4bfb6d31841705b' }
 
-          getAddress(para).then((res) => {
-            console.log(res)
-          })
-          this.temp.address = '上海浦东'
           const that = this
           if (this.editedPlygn) {
             this.temp.drawzPolygon = this.editedPlygn.myPolygon
+            this.temp.address = this.editedPlygn.address
             createFence(this.temp).then((res) => {
               that.temp.id = res.data.id
               this.list.unshift(that.temp)
