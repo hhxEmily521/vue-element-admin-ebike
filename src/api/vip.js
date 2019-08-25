@@ -6,10 +6,24 @@ export function fetchList(query) {
     params: query
   })
 }
-export function createVip(query) {
+export function createVip(data) {
   return request({
     url: '/vip/create',
     method: 'post',
-    params: query
+    data
+  })
+}
+export function updateVip(data) {
+  return request({
+    url: '/vip/update',
+    method: 'post',
+    data
+  })
+}
+export function refundMoney(data) {
+  return request({
+    url: '/order/bike_refund',
+    method: 'post',
+    data
   })
 }

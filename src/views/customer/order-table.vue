@@ -479,7 +479,7 @@
 </template>
 
 <script>
-import { fetchList, createBike, updateBike, backEbikeByManual } from '@/api/order'
+import { fetchList, createBike, refundMoney, backEbikeByManual } from '@/api/order'
 import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -702,10 +702,10 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
-      this.listQuery.rentCarStart= this.listQuery.rentCarStart[0]+'_'+this.listQuery.rentCarStart[1]
-      this.listQuery.rentCarEnd= this.listQuery.rentCarEnd[0]+'_'+this.listQuery.rentCarEnd[1]
-      this.listQuery.payTime= this.listQuery.payTime[0]+'_'+this.listQuery.payTime[1]
+      this.listQuery.duringDay = this.listQuery.duringDay[0] + '_' + this.listQuery.duringDay[1]
+      this.listQuery.rentCarStart = this.listQuery.rentCarStart[0] + '_' + this.listQuery.rentCarStart[1]
+      this.listQuery.rentCarEnd = this.listQuery.rentCarEnd[0] + '_' + this.listQuery.rentCarEnd[1]
+      this.listQuery.payTime = this.listQuery.payTime[0] + '_' + this.listQuery.payTime[1]
 
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
@@ -804,7 +804,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateBike(tempData).then(() => {
+          refundMoney(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)

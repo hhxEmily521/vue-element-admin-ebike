@@ -479,7 +479,7 @@
 </template>
 
 <script>
-import { fetchList, createBike, updateBike, backEbikeByManual } from '@/api/order'
+import { fetchList, updateBike, backEbikeByManual } from '@/api/order'
 import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -767,16 +767,16 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          createBike(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
+          // createBike(this.temp).then(() => {
+          //   this.list.unshift(this.temp)
+          //   this.dialogFormVisible = false
+          //   this.$notify({
+          //     title: '成功',
+          //     message: '创建成功',
+          //     type: 'success',
+          //     duration: 2000
+          //   })
+          // })
         }
       })
     },
