@@ -53,12 +53,12 @@
         </el-col>
         <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="所需积分">
-            <el-input v-model="temp.needPoints" />
+            <el-input v-model="temp.points" />
           </el-form-item>
         </el-col>
         <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="优惠折扣金额(元/小时)">
-            <el-input v-model="temp.perMoney" />
+            <el-input v-model="temp.discount" />
           </el-form-item>
         </el-col>
       </el-form>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { fetchAccountList, fetchPv, createBike, updateAccount } from '@/api/system'
+import { fetchList, fetchPv, createVip, updateAccount } from '@/api/vip'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -187,7 +187,7 @@ export default {
         id: '',
         role: '',
         isMoving: '',
-        useType: 'using',
+        useType: '',
         duringDay: '',
         page: 1,
         limit: 20,
@@ -202,10 +202,9 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        account: undefined,
-        password: undefined,
-        role: undefined,
-        useType: ''
+        level: undefined,
+        points: undefined,
+        discount: undefined // 每小时优惠，单位：分，非负整数
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -232,7 +231,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchAccountList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 
@@ -270,10 +269,9 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        account: undefined,
-        password: undefined,
-        role: undefined,
-        useType: ''
+        level: undefined,
+        points: undefined,
+        discount: undefined // 每小时优惠，单位：分，非负整数
       }
     },
     handleCreate() {
@@ -287,9 +285,9 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.useType = 'using'
-          createBike(this.temp).then(() => {
+          // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          // this.temp.useType = 'using'
+          createVip(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({

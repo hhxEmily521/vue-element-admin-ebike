@@ -51,9 +51,9 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column label="车辆编号" prop="id" align="center" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
       <el-table-column label="车辆IMEI" prop="IMEI" sortable="custom" align="center" width="110">

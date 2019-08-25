@@ -22,11 +22,11 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-label>订单类型</el-label>
+      <span>订单类型</span>
       <el-select v-model="listQuery.orderType" placeholder="订单类型" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in orderTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
-      <el-label>退款状态</el-label>
+      <span>退款状态</span>
       <el-select
         v-model="listQuery.backMoneyStatus"
         placeholder="退款状态"
@@ -43,18 +43,18 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-date-picker
-        v-model="listQuery.duringDay"
-        class="filter-item"
-        style="width: 300px"
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="-"
-        start-placeholder="创建开始时间"
-        end-placeholder="创建结束时间"
-        :picker-options="pickerOptions"
-      />
+      <!--      <el-date-picker-->
+      <!--        v-model="listQuery.duringDay"-->
+      <!--        class="filter-item"-->
+      <!--        style="width: 300px"-->
+      <!--        type="daterange"-->
+      <!--        align="right"-->
+      <!--        unlink-panels-->
+      <!--        range-separator="-"-->
+      <!--        start-placeholder="创建开始时间"-->
+      <!--        end-placeholder="创建结束时间"-->
+      <!--        :picker-options="pickerOptions"-->
+      <!--      />-->
 
       <el-date-picker
         v-model="listQuery.rentCarStart"
@@ -82,18 +82,18 @@
         :picker-options="pickerOptions"
       />
 
-      <el-date-picker
-        v-model="listQuery.payTime"
-        class="filter-item"
-        style="..."
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="-"
-        start-placeholder="支付时间开始"
-        end-placeholder="支付时间结束"
-        :picker-options="pickerOptions"
-      />
+      <!--      <el-date-picker-->
+      <!--        v-model="listQuery.payTime"-->
+      <!--        class="filter-item"-->
+      <!--        style="..."-->
+      <!--        type="daterange"-->
+      <!--        align="right"-->
+      <!--        unlink-panels-->
+      <!--        range-separator="-"-->
+      <!--        start-placeholder="支付时间开始"-->
+      <!--        end-placeholder="支付时间结束"-->
+      <!--        :picker-options="pickerOptions"-->
+      <!--      />-->
 
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -120,12 +120,12 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="订单编号" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column label="订单编号" prop="id" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号" prop="bikeId" sortable="custom" align="center" width="80">
+      <el-table-column label="车辆编号" prop="bikeId" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.bikeId }}</span>
         </template>
@@ -612,7 +612,7 @@ export default {
         backMoneyStatus: 'all',
         isMoving: '',
         useType: 'using',
-        duringDay: '',
+        // duringDay: '',
         page: 1,
         limit: 20,
         importance: undefined,
@@ -621,7 +621,7 @@ export default {
         payNumber: '', // 支付流水号
         rentCarStart: '', // 租车开始时间开始，租车开始时间结束
         rentCarEnd: '', // 租车结束时间开始，租车结束时间结束
-        payTime: '', // 支付时间
+        // payTime: '', // 支付时间
         vipAccount: '', // 会员账户
         vipLevel: '', // 会员等级
         integral: '', // 会员积分
@@ -702,10 +702,10 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
-      this.listQuery.rentCarStart= this.listQuery.rentCarStart[0]+'_'+this.listQuery.rentCarStart[1]
-      this.listQuery.rentCarEnd= this.listQuery.rentCarEnd[0]+'_'+this.listQuery.rentCarEnd[1]
-      this.listQuery.payTime= this.listQuery.payTime[0]+'_'+this.listQuery.payTime[1]
+      // this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      this.listQuery.rentCarStart = this.listQuery.rentCarStart[0] + '_' + this.listQuery.rentCarStart[1]
+      this.listQuery.rentCarEnd = this.listQuery.rentCarEnd[0] + '_' + this.listQuery.rentCarEnd[1]
+      // this.listQuery.payTime= this.listQuery.payTime[0]+'_'+this.listQuery.payTime[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
@@ -839,10 +839,10 @@ export default {
       this.listQuery.orderType = ''
       this.listQuery.backMoneyStatus = ''
       this.listQuery.payNumber = ''
-      this.listQuery.duringDay = ''
+      // this.listQuery.duringDay = ''
       this.listQuery.rentCarStart = ''
       this.listQuery.rentCarEnd = ''
-      this.listQuery.payTime = ''
+      // this.listQuery.payTime = ''
     },
 
     handleDownload() {
