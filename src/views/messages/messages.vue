@@ -40,7 +40,7 @@
       </el-table-column>
       <el-table-column label="内容" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.content|bikeTypeFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column label="会员" min-width="180px">

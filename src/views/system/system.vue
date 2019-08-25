@@ -37,9 +37,9 @@
           <span>{{ scope.row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="登录密码" prop="" align="center" width="180">
+      <el-table-column label="管理员类型" prop="" align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.password }}</span>
+          <span>{{ scope.row.role }}</span>
         </template>
       </el-table-column>
       <el-table-column label="电话" prop="" align="center" width="210">
@@ -84,12 +84,7 @@
           </el-form-item>
         </el-col>
         <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="密码">
-            <el-input v-model="temp.password" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="角色" prop="roleType">
+          <el-form-item label="管理员类型" prop="roleType">
             <el-select v-model="temp.role" placeholder="角色" class="filter-item">
               <el-option v-for="item in roleTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>

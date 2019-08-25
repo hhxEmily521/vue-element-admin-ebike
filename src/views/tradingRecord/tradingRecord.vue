@@ -69,10 +69,10 @@
         </template>
       </el-table-column>
       <!--<el-table-column label="最后使用会员" min-width="180px">-->
-        <!--<template slot-scope="{row}">-->
-          <!--<span class="link-type" @click="handleCopy( row.lastUserId,$event)">会员ID：{{ row.lastUserId }}<br></span>-->
-          <!--<span class="link-type" @click="handleCopy( row.lastUserPhone,$event)">会员手机：{{ row.lastUserPhone }}  <i icon="el-icon-copy-document" /></span>-->
-        <!--</template>-->
+      <!--<template slot-scope="{row}">-->
+      <!--<span class="link-type" @click="handleCopy( row.lastUserId,$event)">会员ID：{{ row.lastUserId }}<br></span>-->
+      <!--<span class="link-type" @click="handleCopy( row.lastUserPhone,$event)">会员手机：{{ row.lastUserPhone }}  <i icon="el-icon-copy-document" /></span>-->
+      <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column label="支付时间" width="200px" align="center">
         <template slot-scope="scope">
@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import { fetchTransactionList} from '@/api/system'
+import { fetchTransactionList } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -165,7 +165,7 @@ import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-dir
 
 const transactionTypeOptions = [
   { key: 'depositPay', display_name: '押金充值' },
-  { key: 'all', display_name: '全部' },
+  { key: 'rental', display_name: '租金' },
   { key: 'depositWithdraw', display_name: '押金提现' },
   { key: 'prepaid', display_name: '余额充值' },
   { key: 'business', display_name: '业务订单' },
@@ -272,7 +272,7 @@ export default {
       temp: {
         id: undefined,
         transactionType: undefined,
-        creatTime: new Date(),
+        creatTime: new Date()
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -284,7 +284,7 @@ export default {
       pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }],
+        updateTime: [{ type: 'date', required: true, message: 'updateTime is required', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -298,7 +298,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
+      this.listQuery.duringDay = this.listQuery.duringDay[0] + '_' + this.listQuery.duringDay[1]
       fetchTransactionList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total

@@ -16,19 +16,19 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="会员等级" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column label="会员等级" prop="id" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.level }}</span>
         </template>
       </el-table-column>
       <el-table-column label="所需积分" prop="" align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.needPoints }}</span>
+          <span>{{ scope.row.points }}</span>
         </template>
       </el-table-column>
       <el-table-column label="优惠折扣金额(元/小时)" prop="" align="center" width="180">
         <template slot-scope="scope">
-          <span>{{ scope.row.perMoney }}</span>
+          <span>{{ scope.row.discount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
@@ -46,19 +46,19 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
-        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="会员等级">
-            <el-input v-model="temp.level" />
+            <el-input v-model.number="temp.level" type="number" />
           </el-form-item>
         </el-col>
-        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="所需积分">
-            <el-input v-model="temp.points" />
+            <el-input v-model.number="temp.points" type="number" />
           </el-form-item>
         </el-col>
-        <el-col v-if="dialogStatus==='create'" :xs="24" :sm="12" :lg="12" class="editBox">
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="优惠折扣金额(元/小时)">
-            <el-input v-model="temp.discount" />
+            <el-input v-model.number="temp.discount" type="number" />
           </el-form-item>
         </el-col>
       </el-form>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createVip, updateAccount } from '@/api/vip'
+import { fetchList, fetchPv, createVip, updateVip } from '@/api/vip'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -202,9 +202,9 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        level: undefined,
-        points: undefined,
-        discount: undefined // 每小时优惠，单位：分，非负整数
+        level: 0,
+        points: 0,
+        discount: 0 // 每小时优惠，单位：分，非负整数
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -268,10 +268,10 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        level: undefined,
-        points: undefined,
-        discount: undefined // 每小时优惠，单位：分，非负整数
+        id: 0,
+        level: 0,
+        points: 0,
+        discount: 0 // 每小时优惠，单位：分，非负整数
       }
     },
     handleCreate() {
@@ -287,6 +287,7 @@ export default {
         if (valid) {
           // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           // this.temp.useType = 'using'
+          console.log(this.temp)
           createVip(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -301,7 +302,8 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
+      this.temp = Object.assign({}, row) // copy ob
+      console.log(this.temp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -312,8 +314,8 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateAccount(tempData).then(() => {
+          tempData.updateTime = +new Date() // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateVip(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)

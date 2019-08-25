@@ -463,7 +463,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, updateBike } from '@/api/backMoney'
+import { fetchList, fetchPv, createBike, refundMoney } from '@/api/backMoney'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -611,7 +611,7 @@ export default {
         orderType: 'all',
         backMoneyStatus: 'all',
         isMoving: '',
-        useType: 'using',
+        useType: '',
         duringDay: '',
         page: 1,
         limit: 20,
@@ -674,9 +674,9 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.duringDay= this.listQuery.duringDay[0]+'_'+this.listQuery.duringDay[1]
-      this.listQuery.rentCarStart= this.listQuery.rentCarStart[0]+'_'+this.listQuery.rentCarStart[1]
-      this.listQuery.rentCarEnd= this.listQuery.rentCarEnd[0]+'_'+this.listQuery.rentCarEnd[1]
+      this.listQuery.duringDay = this.listQuery.duringDay[0] + '_' + this.listQuery.duringDay[1]
+      this.listQuery.rentCarStart = this.listQuery.rentCarStart[0] + '_' + this.listQuery.rentCarStart[1]
+      this.listQuery.rentCarEnd = this.listQuery.rentCarEnd[0] + '_' + this.listQuery.rentCarEnd[1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
@@ -774,7 +774,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.updateTime = +new Date(tempData.updateTime) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateBike(tempData).then(() => {
+          refundMoney(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
