@@ -12,7 +12,7 @@ export function fetchTransactionList(query) {
     method: 'get',
     params: query
   })
-}export function fetchAccountList(query) {
+} export function fetchAccountList(query) {
   return request({
     url: '/system/accountList',
     method: 'get',
@@ -44,9 +44,9 @@ export function createBike(data) {
   })
 }
 
-export function updateAccount(data) {
+export function updateSystem(data) {
   return request({
-    url: '/system/update',
+    url: '/system/dealMessage',
     method: 'post',
     data
   })

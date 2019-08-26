@@ -6,13 +6,20 @@ export function fetchList(query) {
     params: query
   })
 }
+export function refundMoney(data) {
+  return request({
+    url: '/order/bike_refund',
+    method: 'post',
+    data
+  })
+}
 export function fetchMonitorList(query) {
   return request({
     url: '/bike/monitorList',
     method: 'get',
     params: query
   })
-}export function fetchWarningList(query) {
+} export function fetchWarningList(query) {
   return request({
     url: '/bike/warningList',
     method: 'get',

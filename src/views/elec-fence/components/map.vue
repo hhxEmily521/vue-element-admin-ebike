@@ -77,7 +77,8 @@ export default {
       polyEditor: null,
       mapLd: false,
       editedPlygn: null,
-      infoWindow: undefined
+      infoWindow: undefined,
+      geocoder: undefined
     }
   },
   watch: {
@@ -110,6 +111,7 @@ export default {
           that.mouseTool = new AMap.MouseTool(that.theMap)
           // 用鼠标工具画多边形
           var drawPolygon = that.mouseTool.polygon()
+          console.log(drawPolygon)
           // 在地图中添加MouseTool插件
           // var distanceTool = new AMap.MouseTool(that.theMap)
           // distanceTool.rule()
@@ -117,7 +119,15 @@ export default {
             // 获取路径/范围
             that.myPolygon = e.obj.getPath()
             that.editedPlygn = { myPolygon: e.obj.getPath(), drawType: 'polyon' }
-            that.$emit('drawChange', that.editedPlygn)
+            // debugger
+            that.geocoder.getAddress([that.myPolygon[0].lng, that.myPolygon[0].lat], function(status, result) {
+              if (status === 'complete' && result.info === 'OK') {
+                console.log(result)
+                // result为对应的地理位置详细信息
+                that.editedPlygn = { myPolygon: that.myPolygon, drawType: 'polyon', address: result.regeocode.formattedAddress }
+                that.$emit('drawChange', that.editedPlygn)
+              }
+            })
             console.log(that.myPolygon)
           })
         })
@@ -188,10 +198,14 @@ export default {
       }
       // 获取dom元素添加地图信息
       that.theMap = new AMap.Map('container', myOptions)
-      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar'], function() {
+      that.theMap.plugin(['AMap.ControlBar', 'AMap.ToolBar', 'AMap.Geocoder'], function() {
         const controlBar = new AMap.ControlBar({ position: { top: '30px', right: '10px' }, showZoomBarz: true, showControlButton: true })
         that.theMap.addControl(new AMap.ToolBar())
         that.theMap.addControl(controlBar)
+        that.geocoder = new AMap.Geocoder({
+          // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
+          city: '江西'
+        })
         // 图层切换控件
         // that.theMap.addControl(new AMap.BasicControl.LayerSwitcher({
         //   position: 'rt' //right top，右上角
@@ -445,7 +459,7 @@ export default {
         console.log(myPlygn[0].lng)
         console.log(event.lnglat.Q)
         console.log(event.target.B.path[0].Q)
-        that.editedPlygn = { myPolygon: myPlygn, drawType: 'polyon' }
+        that.editedPlygn = { myPolygon: myPlygn, drawType: 'polyon', address: '' }
         that.$emit('drawChange', that.editedPlygn)
       })
       this.polyEditor = new AMap.PolyEditor(this.theMap, polygon)
