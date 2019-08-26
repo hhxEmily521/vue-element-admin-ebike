@@ -9,7 +9,7 @@
       </div>
       <app-main />
       <!--<right-panel v-if="showSettings">-->
-        <!--<settings />-->
+      <!--<settings />-->
       <!--</right-panel>-->
     </div>
   </div>

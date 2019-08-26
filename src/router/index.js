@@ -241,6 +241,14 @@ export const asyncRoutes = [
           title: '退款管理',
           roles: ['admin'] // or you can only set roles in sub nav
         }
+      }, {
+        path: '',
+        component: () => import('@/views/customer/vipRule'),
+        name: 'favourable',
+        meta: {
+          title: '优惠管理',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
       }
     ]
   },

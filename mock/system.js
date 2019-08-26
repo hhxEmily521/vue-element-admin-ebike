@@ -36,9 +36,9 @@ for (let i = 0; i < count; i++) {
     account: '@integer(1000, 9000)',
     password: '@integer(500000, 2000000)',
     phone: '@integer(13000000000, 18000000000)',
-    'role|1': ['admin','webOperate','bikeManager'],
+    'role|1': ['admin', 'webOperate', 'bikeManager'],
     'useType|1': ['using', 'notUse'],
-    lastLoginTime: +Mock.Random.date('T'),
+    lastLoginTime: +Mock.Random.date('T')
   }))
 }
 

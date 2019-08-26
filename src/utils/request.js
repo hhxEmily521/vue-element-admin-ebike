@@ -5,7 +5,7 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'https://ddc.xiaonuan.wang',//process.env.VUE_APP_BASE_API, // url = base url + request url 'https://zh.xiaonuan.wang/', //
+  baseURL: 'https://ddc.xiaonuan.wang', // process.env.VUE_APP_BASE_API, // url = base url + request url 'https://zh.xiaonuan.wang/', //
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url 'https://zh.xiaonuan.wang/', //
   withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout

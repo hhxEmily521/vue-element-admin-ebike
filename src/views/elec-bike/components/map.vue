@@ -101,7 +101,6 @@ export default {
           this.removeAllOverlay()
         }
         this.loadPolyline(val)
-
       }
     },
     markerList(val) {
