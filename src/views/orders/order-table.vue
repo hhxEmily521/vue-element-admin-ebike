@@ -185,7 +185,7 @@
           <el-button v-if="row.orderType!='finish'" size="mini" style="width: 80px" @click="lookLocation(row)">
             手动还车
           </el-button>
-          <el-button size="mini" type="danger" style="width:80px" @click="dialogBackMoneyFuntion(row)">
+          <el-button size="mini" type="danger" style="width:80px" @click="dialogBackMoney = true">
             退款
           </el-button>
 
@@ -410,7 +410,7 @@
         <el-form ref="dataForm" :rules="rules" label-position="left" label-width="80px" style="width: 100%; overflow: hidden;border-bottom:1px solid #dad9d9">
           <el-col :xs="24" :sm="12" :lg="12" class="editBox">
             <el-form-item label="退款金额:" prop="backMoney">
-              <el-input placeholder="请输入金额" style="width:180px" />
+              <el-input v-model="temp.backMoney" placeholder="请输入金额" style="width:180px" />
             </el-form-item>
           </el-col>
 
@@ -459,7 +459,7 @@
           取消
         </el-button>
         <!-- <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-        <el-button type="primary" @click="dialogBackMoney = false">
+        <el-button type="primary" @click="dialogBackMoneyFuntion(temp)">
           确认
         </el-button>
       </div>
@@ -479,7 +479,7 @@
 </template>
 
 <script>
-import { fetchList, updateBike, backEbikeByManual } from '@/api/order'
+import { fetchList, updateBike, backEbikeByManual, refundMoney } from '@/api/order'
 import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -790,7 +790,24 @@ export default {
       })
     },
     dialogBackMoneyFuntion(row) {
+      this.dialogBackMoney = false
       this.temp = Object.assign({}, row)
+      refundMoney(this.temp).then(() => {
+        for (const v of this.list) {
+          if (v.id === this.temp.id) {
+            const index = this.list.indexOf(v)
+            this.list.splice(index, 1, this.temp)
+            break
+          }
+        }
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
       this.temp.updateTime = new Date()
       this.dialogBackMoney = true
       this.$nextTick(() => {
