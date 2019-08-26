@@ -40,7 +40,7 @@
       </el-table-column>
       <el-table-column label="内容" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content|bikeTypeFilter }}</span>
+          <span>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column label="会员" min-width="180px">
@@ -54,10 +54,10 @@
           <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            更改状态
+          <el-button :type="row.isDeal?'info':'primary'" size="mini" @click="handleUpdate(row)">
+            {{ row.isDeal?'已处理':'更改状态' }}
           </el-button>
         </template>
       </el-table-column>
@@ -341,6 +341,7 @@ export default {
 
     },
     handleUpdate(row) {
+      if (row.isDeal) return
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
