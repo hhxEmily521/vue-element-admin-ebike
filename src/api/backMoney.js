@@ -51,3 +51,11 @@ export function updateBike(data) {
     data
   })
 }
+
+export function approveBackMoney(data) {
+  return request({
+    url: '/backMoney/audit',
+    method: 'post',
+    data
+  })
+}

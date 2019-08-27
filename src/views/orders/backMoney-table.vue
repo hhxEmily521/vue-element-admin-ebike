@@ -155,10 +155,10 @@
 
       <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row,'approveBackMoney')">
             审核
           </el-button>
-          <el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">
+          <el-button size="mini" type="primary" style="width:80px" @click="handleUpdate(row,'lookDetail')">
             查看详情
           </el-button>
 
@@ -175,7 +175,7 @@
 
     <el-dialog
       title="退款审核"
-      :visible.sync="dialogFormVisible"
+      :visible.sync="dialogBackMoney"
       style=" min-width: 200px;"
       class="my-dialog"
     >
@@ -303,11 +303,11 @@
 
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <el-button @click="dialogBackMoney = false">
           取消
         </el-button>
         <!-- <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-        <el-button type="primary" @click="dialogFormVisible = false">
+        <el-button type="primary" @click=" dialogBackMoneyFuntion(temp)">
           确认
         </el-button>
       </div>
@@ -327,7 +327,7 @@
 
     <el-dialog
       title="查看详情"
-      :visible.sync="dialogBackMoney"
+      :visible.sync="dialogFormVisible"
       style=" min-width: 200px;"
       class="my-dialog"
     >
@@ -450,7 +450,7 @@
       </div>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogBackMoney = false">
+        <el-button @click="dialogFormVisible = false">
           关闭页面
         </el-button>
 
@@ -463,7 +463,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, refundMoney } from '@/api/backMoney'
+import { fetchList, fetchPv, createBike, approveBackMoney } from '@/api/backMoney'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -751,17 +751,38 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
+    handleUpdate(row, winType) {
+      if (winType === 'lookDetail') {
+        this.dialogFormVisible = true
+      } else {
+        this.dialogBackMoney = true
+      }
       this.temp = Object.assign({}, row) // copy obj
       this.temp.updateTime = new Date()
       this.dialogStatus = 'orderInfo'
-      this.dialogFormVisible = true
       this.$nextTick(() => {
         /* this.$refs['dataForm'].clearValidate()*/
       })
     },
     dialogBackMoneyFuntion(row) {
       this.temp = Object.assign({}, row)
+      this.temp.isApprove = true
+      approveBackMoney(this.temp).then(() => {
+        for (const v of this.list) {
+          if (v.id === this.temp.id) {
+            const index = this.list.indexOf(v)
+            this.list.splice(index, 1, this.temp)
+            break
+          }
+        }
+        this.dialogBackMoney = false
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
       this.temp.updateTime = new Date()
       this.dialogBackMoney = true
       this.$nextTick(() => {

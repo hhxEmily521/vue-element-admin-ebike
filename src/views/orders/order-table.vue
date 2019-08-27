@@ -803,7 +803,7 @@ export default {
             break
           }
         }
-        this.dialogFormVisible = false
+        this.dialogBackMoney = false
         this.$notify({
           title: '成功',
           message: '更新成功',
