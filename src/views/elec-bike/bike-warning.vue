@@ -82,9 +82,9 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" >
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 94%; overflow: hidden;">
-        <el-col  :xs="24" :sm="12" :lg="12" class="editBox">
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
           <el-form-item label="是否处理">
             <el-select v-model="temp.isDeal" placeholder="是否处理" clearable class="filter-item" style="width: 130px">
               <el-option v-for="item in isDealOptions" :key="item.key" :label="item.display_name" :value="item.key" />
@@ -117,7 +117,7 @@
 
 <script>
 import { fetchWarningList, createBike, updateBike } from '@/api/bike'
-import fenceMap from './components/map'
+// import fenceMap from './components/map'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -182,7 +182,7 @@ const useTypeKeyValue = useTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, fenceMap },
+  components: { Pagination },
   directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
@@ -299,7 +299,6 @@ export default {
   methods: {
     changeType() {
       this.dialogFormVisible = true
-
     },
     handleCopy(text, event) {
       clip(text, event)

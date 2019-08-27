@@ -185,7 +185,7 @@
           <el-button v-if="row.orderType!='finish'" size="mini" style="width: 80px" @click="lookLocation(row)">
             手动还车
           </el-button>
-          <el-button size="mini" type="danger" style="width:80px" @click="dialogBackMoney = true">
+          <el-button size="mini" type="danger" style="width:80px" @click="openBackMoney(row)">
             退款
           </el-button>
 
@@ -416,7 +416,7 @@
 
           <el-col :xs="24" :sm="12" :lg="12" class="editBox">
             <el-form-item label="退款备注:" prop="backMoney">
-              <el-input type="textarea" placeholder="请填写退款原因" style="width:180px" />
+              <el-input type="textarea" placeholder="请填写退款原因" v-model="temp.remark" style="width:180px" />
             </el-form-item>
           </el-col>
         </el-form>
@@ -789,8 +789,11 @@ export default {
         /* this.$refs['dataForm'].clearValidate()*/
       })
     },
+    openBackMoney(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogBackMoney = true
+    },
     dialogBackMoneyFuntion(row) {
-      this.dialogBackMoney = false
       this.temp = Object.assign({}, row)
       refundMoney(this.temp).then(() => {
         for (const v of this.list) {

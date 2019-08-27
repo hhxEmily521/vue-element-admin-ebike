@@ -12,7 +12,7 @@ export function fetchMonitorList(query) {
     method: 'get',
     params: query
   })
-}export function fetchWarningList(query) {
+} export function fetchWarningList(query) {
   return request({
     url: '/bike/warningList',
     method: 'get',

@@ -168,11 +168,11 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="车辆位置">
-    <fence-map :draw-type="'markers'" />
-    <span slot="footer" class="dialog-footer">
+      <fence-map :draw-type="'markers'" />
+      <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
-  </el-dialog>
+    </el-dialog>
   </div>
 </template>
 
