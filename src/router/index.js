@@ -40,7 +40,7 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/',
-    redirect: '/vue-element-admin-ebike',
+    redirect: '/',
     component: Layout,
     hidden: true,
     children: [

@@ -404,7 +404,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
+          this.temp.author = '共享电动车'
           createBike(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
