@@ -31,7 +31,7 @@
       />
 
       <br>
-      <el-label>退款状态</el-label>
+      <h5>退款状态</h5>
       <el-select
         v-model="listQuery.backMoneyStatus"
         placeholder="退款状态"
@@ -93,20 +93,20 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="退款单编号" prop="id" sortable="custom" align="center" width="100">
+      <el-table-column label="退款单编号" prop="id" align="center" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.backMoneyId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号" prop="bikeId" sortable="custom" align="center" width="80">
+      <el-table-column label="车辆编号" prop="bikeId"  align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.bikeId }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="订单编号" prop="bikeId" sortable="custom" align="center" width="80">
+      <el-table-column label="订单编号" prop="bikeId"  align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderId }}</span>
+          <span>{{ scope.row.tid }}</span>
         </template>
       </el-table-column>
 
@@ -134,7 +134,7 @@
 
       <el-table-column label="退款原因" min-width="100px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.backMoneyReason | backMoneyReasonFilter }}</span>
+          <span class="link-type">{{ row.remarks }}</span>
         </template>
       </el-table-column>
 
@@ -149,16 +149,16 @@
 
       <el-table-column label="订单备注" min-width="100px">
         <template slot-scope="{row}">
-          <el-tag>{{ row.remarks }}</el-tag>
+          <span>{{ row.remarks }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" style="width: 80px" v-if="row.backMoneyStatus==1" @click="handleUpdate(row,'approveBackMoney')">
             审核
           </el-button>
-          <el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">
+          <el-button size="mini" type="primary" style="width:80px" @click="handleUpdate(row,'lookDetail')">
             查看详情
           </el-button>
 
@@ -175,7 +175,7 @@
 
     <el-dialog
       title="退款审核"
-      :visible.sync="dialogFormVisible"
+      :visible.sync="dialogBackMoney"
       style=" min-width: 200px;"
       class="my-dialog"
     >
@@ -185,7 +185,7 @@
         <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
           <tr>
             <td style="width: 80px">退款单编号:</td>
-            <td style="width:350px">{{ temp.id }}</td>
+            <td style="width:350px">{{ temp.backMoneyId }}</td>
             <td style="width: 80px">会员ID:</td>
             <td style="width: 350px">{{ temp.vipId }}</td>
           </tr>
@@ -212,7 +212,7 @@
 
           <tr>
             <td style="width: 80px">订单编号:</td>
-            <td style="width:350px">{{ temp.orderId }}</td>
+            <td style="width:350px">{{ temp.tid }}</td>
             <td style="width: 80px">订单金额:</td>
             <td style="width: 350px">{{ temp.orderMoney }}</td>
           </tr>
@@ -264,7 +264,7 @@
             <td style="width: 130px">退款金额:</td>
             <td style="width:350px">{{ temp.backMoney }}</td>
             <td style="width: 130px">退款原因:</td>
-            <td style="width:350px">{{ temp.backMoneyReason | backMoneyReasonFilter }}</td>
+            <td style="width:350px">{{ temp.remarks }}</td>
           </tr>
         </table>
 
@@ -303,11 +303,14 @@
 
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <el-button @click="dialogBackMoney = false">
           取消
         </el-button>
         <!-- <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-        <el-button type="primary" @click="dialogFormVisible = false">
+        <el-button type="" @click=" dialogBackMoneyFuntion(temp,false)">
+          拒绝
+        </el-button>
+        <el-button type="primary" @click=" dialogBackMoneyFuntion(temp,true)">
           确认
         </el-button>
       </div>
@@ -327,7 +330,7 @@
 
     <el-dialog
       title="查看详情"
-      :visible.sync="dialogBackMoney"
+      :visible.sync="dialogFormVisible"
       style=" min-width: 200px;"
       class="my-dialog"
     >
@@ -361,7 +364,7 @@
         <table style="border-bottom:1px solid #dad9d9;padding-bottom: 20px">
           <tr>
             <td style="width: 80px">订单编号:</td>
-            <td style="width:350px">{{ temp.orderId }}</td>
+            <td style="width:350px">{{ temp.tid }}</td>
             <td style="width: 80px">订单金额:</td>
             <td style="width: 350px">{{ temp.orderMoney }}</td>
           </tr>
@@ -412,7 +415,7 @@
             <td style="width: 130px">退款金额:</td>
             <td style="width:350px">{{ temp.backMoney }}</td>
             <td style="width: 130px">退款原因:</td>
-            <td style="width:350px">{{ temp.backMoneyReason | backMoneyReasonFilter }}</td>
+            <td style="width:350px">{{ temp.remarks }}</td>
           </tr>
         </table>
         <p>车辆信息</p><br>
@@ -450,7 +453,7 @@
       </div>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogBackMoney = false">
+        <el-button @click="dialogFormVisible = false">
           关闭页面
         </el-button>
 
@@ -463,7 +466,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, refundMoney } from '@/api/backMoney'
+import { fetchList, fetchPv, createBike, approveBackMoney } from '@/api/backMoney'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -495,11 +498,12 @@ const operateRoleKeyValue = operateRoleOptions.reduce((acc, cur) => {
 }, {})
 
 const backMoneyStatusOptions = [
-  { key: 'all', display_name: '全部' },
-  { key: 'applyBackMoney', display_name: '申请退款' },
-  { key: 'agreeBackMoney', display_name: '同意退款' },
-  { key: 'refuseBackMoney', display_name: '拒绝退款' },
-  { key: 'finish', display_name: '结算完成' }
+  { key: 0, display_name: '初始化' },
+  { key: 1, display_name: '待审核' },
+  { key: 2, display_name: '审核通过，待微信退款' },
+  { key: 3, display_name: '审核拒绝' },
+  { key: 4, display_name: '微信退款成功' },
+  { key: 5, display_name: '退款失败' }
 
 ]
 
@@ -737,7 +741,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
+          this.temp.author = '共享电动车'
           createBike(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -751,17 +755,38 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
+    handleUpdate(row, winType) {
+      if (winType === 'lookDetail') {
+        this.dialogFormVisible = true
+      } else {
+        this.dialogBackMoney = true
+      }
       this.temp = Object.assign({}, row) // copy obj
       this.temp.updateTime = new Date()
       this.dialogStatus = 'orderInfo'
-      this.dialogFormVisible = true
       this.$nextTick(() => {
         /* this.$refs['dataForm'].clearValidate()*/
       })
     },
-    dialogBackMoneyFuntion(row) {
+    dialogBackMoneyFuntion(row,isApprove) {
       this.temp = Object.assign({}, row)
+      this.temp.isApprove = isApprove
+      approveBackMoney(this.temp).then(() => {
+        for (const v of this.list) {
+          if (v.id === this.temp.id) {
+            const index = this.list.indexOf(v)
+            this.list.splice(index, 1, this.temp)
+            break
+          }
+        }
+        this.dialogBackMoney = false
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
       this.temp.updateTime = new Date()
       this.dialogBackMoney = true
       this.$nextTick(() => {

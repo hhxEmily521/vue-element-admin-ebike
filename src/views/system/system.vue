@@ -415,8 +415,8 @@ export default {
 }
 </script>
 <style>
-  .my-dialog .el-dialog{
-    margin:10vw 10vw !important;
-    width: 80%;
-  }
+  /*.my-dialog .el-dialog{*/
+    /*margin:10vw 10vw !important;*/
+    /*width: 80%;*/
+  /*}*/
 </style>

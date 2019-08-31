@@ -173,7 +173,7 @@
 
       <el-table-column label="订单备注" min-width="100px">
         <template slot-scope="{row}">
-          <el-tag>{{ row.remarks }}</el-tag>
+          <span>{{ row.remarks }}</span>
         </template>
       </el-table-column>
 
@@ -510,7 +510,7 @@ const operateRoleKeyValue = operateRoleOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
-
+// 0-初始化， 1-待审核 2-审核通过，待微信退款 3-审核拒绝 4-微信退款成功 5-退款失败
 const backMoneyStatusOptions = [
   { key: 'all', display_name: '全部' },
   { key: 'applyBackMoney', display_name: '申请退款' },

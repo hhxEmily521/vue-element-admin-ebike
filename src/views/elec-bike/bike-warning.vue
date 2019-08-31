@@ -69,7 +69,7 @@
       <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            更改状态
+            处理
           </el-button>
           <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->
           <!--修改-->

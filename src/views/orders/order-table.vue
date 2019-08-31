@@ -173,7 +173,7 @@
 
       <el-table-column label="订单备注" min-width="100px">
         <template slot-scope="{row}">
-          <el-tag>{{ row.remarks }}</el-tag>
+          <span>{{ row.remarks }}</span>
         </template>
       </el-table-column>
 
@@ -512,11 +512,12 @@ const operateRoleKeyValue = operateRoleOptions.reduce((acc, cur) => {
 }, {})
 
 const backMoneyStatusOptions = [
-  { key: 'all', display_name: '全部' },
-  { key: 'applyBackMoney', display_name: '申请退款' },
-  { key: 'agreeBackMoney', display_name: '同意退款' },
-  { key: 'refuseBackMoney', display_name: '拒绝退款' },
-  { key: 'finish', display_name: '结算完成' }
+  { key: 0, display_name: '初始化' },
+  { key: 1, display_name: '待审核' },
+  { key: 2, display_name: '审核通过，待微信退款' },
+  { key: 3, display_name: '审核拒绝' },
+  { key: 4, display_name: '微信退款成功' },
+  { key: 5, display_name: '退款失败' }
 
 ]
 
@@ -766,7 +767,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
+          this.temp.author = '共享电动车'
           // createBike(this.temp).then(() => {
           //   this.list.unshift(this.temp)
           //   this.dialogFormVisible = false
@@ -803,7 +804,7 @@ export default {
             break
           }
         }
-        this.dialogFormVisible = false
+        this.dialogBackMoney = false
         this.$notify({
           title: '成功',
           message: '更新成功',
