@@ -37,7 +37,7 @@
         新增
       </el-button>
       <!--<el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
-        <!--导出-->
+      <!--导出-->
       <!--</el-button>-->
     </div>
 
@@ -56,12 +56,12 @@
           <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="车辆IMEI" prop="IMEI" sortable="custom" align="center" width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.IMEI }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="二维码编号" min-width="150px">
+      <el-table-column label="二维码编号" min-width="100px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
         </template>
@@ -103,7 +103,7 @@
           <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="120px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             修改

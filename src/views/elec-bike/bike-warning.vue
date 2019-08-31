@@ -25,22 +25,22 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
+      <el-table-column label="车辆编号" prop="id" align="center" width="110">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆名称" min-width="150px">
+      <el-table-column label="车辆名称" min-width="50px">
         <template slot-scope="{row}">
           <span>{{ row.bikeName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否处理" min-width="80px">
+      <el-table-column label="是否处理" min-width="50px">
         <template slot-scope="{row}">
           <span>{{ row.isDeal | isDealTypeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="报警类型" min-width="130px">
+      <el-table-column label="报警类型" min-width="50px">
         <template slot-scope="{row}">
           <el-tag>{{ row.warningType | warningTypeFilter }}</el-tag>
         </template>
@@ -61,7 +61,7 @@
           <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="110">
+      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="150">
         <template slot-scope="scope">
           <span>{{ scope.row.IMEI }}</span>
         </template>

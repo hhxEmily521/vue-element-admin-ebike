@@ -38,12 +38,12 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="交易Id" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column label="交易ID" prop="id" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="金额" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="金额" prop="IMEI" align="center" width="110">
         <template slot-scope="scope">
           <span>{{ scope.row.money }}</span>
         </template>
@@ -53,12 +53,12 @@
           <span class="link-type" @click="handleCopy( row.transactionId,$event)">{{ row.transactionId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="收款账号" prop="IMEI" sortable="custom" align="center" width="220">
+      <el-table-column label="收款账号" prop="IMEI" align="center" width="220">
         <template slot-scope="scope">
           <span class="link-type" @click="handleCopy( row.acceptAccount,$event)">{{ scope.row.acceptAccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="付款账号" prop="IMEI" sortable="custom" align="center" width="220">
+      <el-table-column label="付款账号" prop="IMEI" align="center" width="220">
         <template slot-scope="scope">
           <span class="link-type" @click="handleCopy( row.payAccount,$event)">{{ scope.row.payAccount }}</span>
         </template>

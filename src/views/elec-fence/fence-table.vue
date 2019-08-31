@@ -18,7 +18,7 @@
         添加
       </el-button>
       <!--<el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
-        <!--导出-->
+      <!--导出-->
       <!--</el-button>-->
       <!--<el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">-->
       <!--操作人-->
@@ -35,12 +35,12 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column label="ID" prop="id" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="时间" width="150px" align="center">
+      <el-table-column label="时间" width="150px" sortable="custom" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -102,7 +102,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog class="map-dialog" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 90%; margin-left:50px;">
         <el-row>
           <el-form-item label="名称" prop="title" placeholder="输入名称">
             <el-input v-model="temp.title" />

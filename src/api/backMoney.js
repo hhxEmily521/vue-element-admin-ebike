@@ -59,3 +59,10 @@ export function approveBackMoney(data) {
     data
   })
 }
+export function refundMoney(data) {
+  return request({
+    url: '/order/bike_refund',
+    method: 'post',
+    data
+  })
+}

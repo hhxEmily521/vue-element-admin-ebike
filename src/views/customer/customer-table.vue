@@ -23,8 +23,8 @@
         @keyup.enter.native="handleFilter"
       />
 
-      <br>
-      <span>会员类型</span>
+      <!--      <br>-->
+      <!--      <span>会员类型</span>-->
       <el-select
         v-model="listQuery.customStatus"
         placeholder="会员类型"
@@ -34,11 +34,12 @@
       >
         <el-option v-for="item in customStatusOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
+      <br>
 
       <el-date-picker
         v-model="listQuery.duringDay"
         class="filter-item"
-        style="width: 300px"
+        style="width: 320px"
         type="daterange"
         align="right"
         unlink-panels
@@ -100,14 +101,14 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="会员ID" prop="id" align="center" width="180">
+      <el-table-column label="会员ID" prop="id" align="center" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.wxUserId }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.wxUserId,$event)">点击复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="会员OPENID" prop="id" align="center" width="220">
+      <el-table-column label="会员OPENID" prop="id" align="center" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.openId }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.openId,$event)">点击复制ID</span>
         </template>
       </el-table-column>
       <el-table-column label="会员昵称" prop="id" align="center" width="100">

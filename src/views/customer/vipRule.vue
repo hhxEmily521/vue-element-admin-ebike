@@ -14,6 +14,7 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      align="center"
       @sort-change="sortChange"
     >
       <el-table-column label="会员等级" prop="id" align="center" width="80">
@@ -57,10 +58,14 @@
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :lg="12" class="editBox">
-          <el-form-item label="优惠折扣金额(元/小时)">
+          <el-form-item label="优惠折扣">
             <el-input v-model.number="temp.discount" type="number" />
           </el-form-item>
         </el-col>
+        <el-col :xs="24" :sm="12" :lg="12" class="editBox">
+          <el-form-item label="(元/小时)" />
+        </el-col>
+
       </el-form>
       <!--<el-col :xs="24" :sm="24" :lg="24" class="editBox">-->
       <div slot="footer" class="dialog-footer">
