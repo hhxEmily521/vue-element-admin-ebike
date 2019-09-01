@@ -34,7 +34,7 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
+      <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="120">
         <template slot-scope="scope">
           <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
@@ -50,7 +50,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="车辆名称" min-width="150px">
+      <el-table-column label="车辆名称" min-width="160px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.bikeName }}</span>
         </template>
@@ -65,7 +65,7 @@
           <el-tag>{{ row.useType | useTypeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="移动中" min-width="50px">
+      <el-table-column label="移动中" min-width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.isMoving | moveTypeFilter }}</span>
         </template>
@@ -86,14 +86,14 @@
           <span>{{ scope.row.changeBatteryTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="110">
+      <el-table-column label="车辆IMEI" prop="IMEI" align="center" width="150">
         <template slot-scope="scope">
           <span>{{ scope.row.IMEI }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="lookLocation(row)">
+          <el-button type="primary" size="small" @click="lookLocation(row)">
             查看位置
           </el-button>
           <!--<el-button type="primary" size="mini" @click="handleUpdate(row)">-->

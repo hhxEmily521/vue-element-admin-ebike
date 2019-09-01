@@ -28,12 +28,12 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否处理" min-width="80px">
+      <el-table-column label="是否处理" min-width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.isDeal | isDealTypeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="消息类型" min-width="130px">
+      <el-table-column label="消息类型" min-width="130px" align="center">
         <template slot-scope="{row}">
           <el-tag>{{ row.messageType | messageTypeFilter }}</el-tag>
         </template>
@@ -56,7 +56,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button :type="row.isDeal?'info':'primary'" size="mini" @click="handleUpdate(row)">
+          <el-button :type="row.isDeal?'info':'primary'" size="small" @click="handleUpdate(row)">
             {{ row.isDeal?'已处理':'更改状态' }}
           </el-button>
         </template>

@@ -174,7 +174,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" style="width:80px" @click="dialogBackMoneyFuntion(row)">
             查看详情
@@ -255,11 +255,11 @@
           </tr>
           <br>
           <tr>
-            <td style="width: 80px">押金支付金额:</td>
+            <td style="width: 200px;">押金支付金额:</td>
             <td style="width:350px">{{ temp.promiseMoney }}</td>
             <td style="width: 80px">租金支付金额:</td>
             <td style="width:350px">{{ temp.rentalPayMoney }}</td>
-            <td style="width: 80px">有效期开始时间:</td>
+            <td style="width: 230px;">有效期开始时间:</td>
             <td style="width:350px">{{ temp.canUseStartTime }}</td>
           </tr>
           <br>
