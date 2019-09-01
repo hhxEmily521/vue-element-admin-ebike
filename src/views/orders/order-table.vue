@@ -25,7 +25,7 @@
       <span>订单类型</span>
       <el-select v-model="listQuery.orderType" placeholder="订单类型" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in orderTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
+      </el-select><br>
       <span>退款状态</span>
       <el-select
         v-model="listQuery.backMoneyStatus"
@@ -131,14 +131,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="会员" min-width="190px">
+      <el-table-column label="会员" min-width="325" align="center">
         <template slot-scope="{row}">
-          <span class="link-type">会员ID：{{ row.vipId }}<br></span>
-          <span class="link-type">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
+          <span class="link-type" style="float: left">会员ID：{{ row.vipId }}<br></span>
+          <span class="link-type" style="float: left">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
         </template>
       </el-table-column>
 
-      <el-table-column label="金额（元）" min-width="120px">
+      <el-table-column label="金额（元）" min-width="150px" align="center">
         <template slot-scope="{row}">
           <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
           <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
@@ -146,23 +146,23 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="退款" min-width="180px">
+      <el-table-column label="退款" min-width="250px" align="center">
         <template slot-scope="{row}">
           <!--  <span class="link-type">退款状态：{{ row.orderBackType }}<br></span>-->
           <!-- <el-tag>{{ row.backMoneyStatus | backMoneyStatusFilter }}</el-tag>-->
-          <span class="link-type">退款状态：{{ row.backMoneyStatus | backMoneyStatusFilter }}<br></span>
-          <span class="link-type">退款金额：{{ row.backMoney }}  <i icon="el-icon-copy-document" /></span>
+          <span class="link-type" style="float: left">退款状态：{{ row.backMoneyStatus | backMoneyStatusFilter }}</span><br>
+          <span class="link-type" style="float: left">退款金额：{{ row.backMoney }}  <i icon="el-icon-copy-document" /></span>
         </template>
       </el-table-column>
 
-      <el-table-column label="订单状态" min-width="80px">
+      <el-table-column label="订单状态" min-width="80px" align="center">
         <template slot-scope="{row}">
           <!--  <el-tag>{{ row.orderType | orderTypeFilter }}</el-tag>-->
           <span class="link-type">{{ row.orderType | orderTypeFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="时间" min-width="180px">
+      <el-table-column label="时间" min-width="180px" align="center">
         <template slot-scope="{row}">
           <span class="link-type">创建：{{ row.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
           <span class="link-type">开始：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
@@ -171,7 +171,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="130px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
             订单详情
@@ -185,7 +185,7 @@
 
         </template>
       </el-table-column>
-      <el-table-column label="订单备注" min-width="300px">
+      <el-table-column label="订单备注" min-width="300px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remarks }}</span>
         </template>

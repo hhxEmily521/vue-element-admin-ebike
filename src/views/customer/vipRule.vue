@@ -13,10 +13,10 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
-      align="center"
+      style="width:671px"
       @sort-change="sortChange"
     >
+
       <el-table-column label="会员等级" prop="id" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.level }}</span>
@@ -42,7 +42,9 @@
           </el-button>
         </template>
       </el-table-column>
+
     </el-table>
+
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style=" min-width: 200px;" class="my-dialog">
@@ -79,7 +81,6 @@
       <!--</el-col>-->
       <div />
     </el-dialog>
-
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />

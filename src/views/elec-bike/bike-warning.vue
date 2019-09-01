@@ -30,17 +30,17 @@
           <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆名称" min-width="50px">
+      <el-table-column label="车辆名称" min-width="50px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.bikeName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否处理" min-width="50px">
+      <el-table-column label="是否处理" min-width="50px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.isDeal | isDealTypeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="报警类型" min-width="50px">
+      <el-table-column label="报警类型" min-width="80px" align="center">
         <template slot-scope="{row}">
           <el-tag>{{ row.warningType | warningTypeFilter }}</el-tag>
         </template>

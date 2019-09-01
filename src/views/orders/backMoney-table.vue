@@ -93,7 +93,7 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="退款单编号" prop="id" align="center" width="80">
+      <el-table-column label="退款单编号" prop="id" align="center" width="100">
         <template slot-scope="scope">
           <span class="link-type" @click="handleCopy(scope.row.backMoneyId,$event)">复制编号</span>
         </template>
@@ -110,14 +110,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="会员" min-width="190px">
+      <el-table-column label="会员" min-width="325" align="center">
         <template slot-scope="{row}">
-          <span class="link-type">会员ID：{{ row.vipId }}<br></span>
-          <span class="link-type">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
+          <span class="link-type" style="float:left">会员ID：{{ row.vipId }}<br></span>
+          <span class="link-type" style="float:left">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
         </template>
       </el-table-column>
 
-      <el-table-column label="金额（元）" min-width="120px">
+      <el-table-column label="金额（元）" min-width="150px" align="center">
         <template slot-scope="{row}">
           <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
           <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
@@ -125,20 +125,20 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="退款状态" min-width="100px">
+      <el-table-column label="退款状态" min-width="180px" align="center">
         <template slot-scope="{row}">
           <!--  <el-tag>{{ row.orderType | orderTypeFilter }}</el-tag>-->
           <span class="link-type">{{ row.backMoneyStatus | backMoneyStatusFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="退款原因" min-width="100px">
+      <el-table-column label="退款原因" min-width="100px" align="center">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.remarks }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="时间" min-width="180px">
+      <el-table-column label="时间" min-width="180px" align="center">
         <template slot-scope="{row}">
           <span class="link-type">创建：{{ row.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
           <span class="link-type">开始：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
@@ -157,7 +157,7 @@
 
         </template>
       </el-table-column>
-      <el-table-column label="订单备注" min-width="250px">
+      <el-table-column label="订单备注" min-width="250px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remarks }}</span>
         </template>
