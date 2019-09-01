@@ -36,15 +36,15 @@
     >
       <el-table-column label="车辆编号" prop="id" sortable="custom" align="center" width="110">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="当前电量" prop="IMEI" sortable="custom" align="center" width="110">
+      <el-table-column label="当前电量" prop="IMEI" sortable="custom" align="center" width="90">
         <template slot-scope="scope">
           <span>{{ scope.row.batteryQuantity }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="可行驶(KM)" prop="IMEI" sortable="custom" align="center" width="140">
+      <el-table-column label="可行驶(KM)" prop="IMEI" sortable="custom" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.canRunKM }}</span>
         </template>
@@ -65,7 +65,7 @@
           <el-tag>{{ row.useType | useTypeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="移动中" min-width="80px">
+      <el-table-column label="移动中" min-width="50px">
         <template slot-scope="{row}">
           <span>{{ row.isMoving | moveTypeFilter }}</span>
         </template>
@@ -91,7 +91,7 @@
           <span>{{ scope.row.IMEI }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="130" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="lookLocation(row)">
             查看位置

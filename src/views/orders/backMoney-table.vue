@@ -31,7 +31,7 @@
       />
 
       <br>
-      <h5>退款状态</h5>
+      <!--      <span>退款状态</span>-->
       <el-select
         v-model="listQuery.backMoneyStatus"
         placeholder="退款状态"
@@ -93,20 +93,20 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="退款单编号" prop="id" align="center" width="100">
+      <el-table-column label="退款单编号" prop="id" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.backMoneyId }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.backMoneyId,$event)">复制编号</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号" prop="bikeId"  align="center" width="80">
+      <el-table-column label="车辆编号" prop="bikeId" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.bikeId }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.bikeId,$event)">复制编号</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="订单编号" prop="bikeId"  align="center" width="80">
+      <el-table-column label="订单编号" prop="bikeId" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.tid }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.tid,$event)">复制编号</span>
         </template>
       </el-table-column>
 
@@ -117,7 +117,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="金额（元）" min-width="190px">
+      <el-table-column label="金额（元）" min-width="120px">
         <template slot-scope="{row}">
           <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
           <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
@@ -146,24 +146,23 @@
           <span class="link-type">修改：{{ row.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
-
-      <el-table-column label="订单备注" min-width="100px">
+      <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <span>{{ row.remarks }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" style="width: 80px" v-if="row.backMoneyStatus==1" @click="handleUpdate(row,'approveBackMoney')">
+          <el-button v-if="row.backMoneyStatus==1" type="primary" size="mini" style="width: 80px" @click="handleUpdate(row,'approveBackMoney')">
             审核
-          </el-button>
-          <el-button size="mini" type="primary" style="width:80px" @click="handleUpdate(row,'lookDetail')">
+          </el-button><br v-if="row.backMoneyStatus==1">
+          <el-button size="mini" type="primary" style="width:80px; margin-top: 10px" @click="handleUpdate(row,'lookDetail')">
             查看详情
           </el-button>
 
         </template>
       </el-table-column>
+      <el-table-column label="订单备注" min-width="250px">
+        <template slot-scope="{row}">
+          <span>{{ row.remarks }}</span>
+        </template>
+      </el-table-column>
+
     </el-table>
     <pagination
       v-show="total>0"
@@ -466,7 +465,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createBike, approveBackMoney } from '@/api/backMoney'
+import { fetchList, fetchPv, createBike, approveBackMoney, refundMoney } from '@/api/backMoney'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -612,8 +611,8 @@ export default {
       listLoading: true,
       listQuery: { // 订单参数
         id: '',
-        orderType: 'all',
-        backMoneyStatus: 'all',
+        orderType: '',
+        backMoneyStatus: '',
         isMoving: '',
         useType: '',
         duringDay: '',
@@ -768,7 +767,7 @@ export default {
         /* this.$refs['dataForm'].clearValidate()*/
       })
     },
-    dialogBackMoneyFuntion(row,isApprove) {
+    dialogBackMoneyFuntion(row, isApprove) {
       this.temp = Object.assign({}, row)
       this.temp.isApprove = isApprove
       approveBackMoney(this.temp).then(() => {

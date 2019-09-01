@@ -122,12 +122,12 @@
     >
       <el-table-column label="订单编号" prop="id" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制</span>
         </template>
       </el-table-column>
       <el-table-column label="车辆编号" prop="bikeId" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.bikeId }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.bikeId,$event)">点击复制</span>
         </template>
       </el-table-column>
 
@@ -138,7 +138,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="金额（元）" min-width="190px">
+      <el-table-column label="金额（元）" min-width="120px">
         <template slot-scope="{row}">
           <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
           <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
@@ -155,7 +155,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="订单状态" min-width="100px">
+      <el-table-column label="订单状态" min-width="80px">
         <template slot-scope="{row}">
           <!--  <el-tag>{{ row.orderType | orderTypeFilter }}</el-tag>-->
           <span class="link-type">{{ row.orderType | orderTypeFilter }}</span>
@@ -171,24 +171,23 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="订单备注" min-width="100px">
-        <template slot-scope="{row}">
-          <span>{{ row.remarks }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" style="width: 80px" @click="handleUpdate(row)">
             订单详情
-          </el-button>
-          <el-button v-if="row.orderType!='finish'" size="mini" style="width: 80px" @click="lookLocation(row)">
+          </el-button><br>
+          <el-button v-if="row.orderType!='finish'" size="mini" style="width: 80px; margin-top: 10px" @click="lookLocation(row)">
             手动还车
-          </el-button>
-          <el-button size="mini" type="danger" style="width:80px" @click="openBackMoney(row)">
+          </el-button><br>
+          <el-button size="mini" type="danger" style="width:80px; margin-top: 10px" @click="openBackMoney(row)">
             退款
           </el-button>
 
+        </template>
+      </el-table-column>
+      <el-table-column label="订单备注" min-width="300px">
+        <template slot-scope="{row}">
+          <span>{{ row.remarks }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -416,7 +415,7 @@
 
           <el-col :xs="24" :sm="12" :lg="12" class="editBox">
             <el-form-item label="退款备注:" prop="backMoney">
-              <el-input type="textarea" placeholder="请填写退款原因" v-model="temp.remark" style="width:180px" />
+              <el-input v-model="temp.remark" type="textarea" placeholder="请填写退款原因" style="width:180px" />
             </el-form-item>
           </el-col>
         </el-form>
@@ -609,10 +608,10 @@ export default {
       listLoading: true,
       listQuery: { // 订单参数
         id: '',
-        orderType: 'all',
-        backMoneyStatus: 'all',
+        orderType: '',
+        backMoneyStatus: '',
         isMoving: '',
-        useType: 'using',
+        useType: '',
         // duringDay: '',
         page: 1,
         limit: 20,
