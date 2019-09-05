@@ -45,7 +45,7 @@
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="120px">
+      <el-table-column label="名称" width="120px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
@@ -486,5 +486,8 @@ export default {
   }
   .el-input{
     margin-right: 20px;
+  }
+  .el-table .caret-wrapper{
+    display: none;
   }
 </style>
