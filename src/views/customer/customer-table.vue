@@ -128,7 +128,7 @@
       </el-table-column>
       <el-table-column label="性别" prop="id" align="center" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.sex?'女':'男' }}</span>
+          <span>{{ scope.row.sex?'男':'女' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="生日" prop="id" align="center" width="100">
