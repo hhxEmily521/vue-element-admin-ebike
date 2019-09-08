@@ -133,41 +133,41 @@
 
       <el-table-column label="会员" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">会员ID：{{ row.vipId }}<br></span>
-          <span class="link-type">会员电话：{{ row.vipNumber }}  <i icon="el-icon-copy-document" /></span>
+          <span>会员ID：{{ row.vipId }}<br></span>
+          <span>会员电话：{{ row.vipNumber }}    </span>
         </template>
       </el-table-column>
 
       <el-table-column label="金额（元）" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">实付金额：{{ row.trueMoney }}<br></span>
-          <span class="link-type">订单金额：{{ row.orderMoney }}<br></span>
-          <span class="link-type">优惠金额：{{ row.preferentialMoney }}</span>
+          <span>实付金额：{{ row.trueMoney }}<br></span>
+          <span>订单金额：{{ row.orderMoney }}<br></span>
+          <span>优惠金额：{{ row.preferentialMoney }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="退款" min-width="180px">
         <template slot-scope="{row}">
-          <!--  <span class="link-type">退款状态：{{ row.orderBackType }}<br></span>-->
+          <!--  <span  >退款状态：{{ row.orderBackType }}<br></span>-->
           <!-- <el-tag>{{ row.backMoneyStatus | backMoneyStatusFilter }}</el-tag>-->
-          <span class="link-type">退款状态：{{ row.backMoneyStatus | backMoneyStatusFilter }}<br></span>
-          <span class="link-type">退款金额：{{ row.backMoney }}  <i icon="el-icon-copy-document" /></span>
+          <span>退款状态：{{ row.backMoneyStatus | backMoneyStatusFilter }}<br></span>
+          <span>退款金额：{{ row.backMoney }}    </span>
         </template>
       </el-table-column>
 
       <el-table-column label="订单状态" min-width="100px">
         <template slot-scope="{row}">
           <!--  <el-tag>{{ row.orderType | orderTypeFilter }}</el-tag>-->
-          <span class="link-type">{{ row.orderType | orderTypeFilter }}</span>
+          <span>{{ row.orderType | orderTypeFilter }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">创建：{{ row.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">开始：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">结束：{{ row.rentCarEnd | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
-          <span class="link-type">修改：{{ row.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>创建：{{ row.rentCarStart | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>开始：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>结束：{{ row.rentCarEnd | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>修改：{{ row.editTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
 

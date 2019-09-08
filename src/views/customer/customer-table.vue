@@ -139,38 +139,38 @@
 
       <el-table-column label="会员电话" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.phone }}  <i icon="el-icon-copy-document" /></span>
+          <span>{{ row.phone }} </span>
         </template>
       </el-table-column>
       <el-table-column label="用户类型" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.userType|customStatusFilter }}  <i icon="el-icon-copy-document" /></span>
+          <span>{{ row.userType|customStatusFilter }}  </span>
         </template>
       </el-table-column>
       <el-table-column label="已消费" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.money }}  <i icon="el-icon-copy-document" /></span>
+          <span>{{ row.money }}  </span>
         </template>
       </el-table-column>
       <el-table-column label="余额" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.balance }}  <i icon="el-icon-copy-document" /></span>
+          <span>{{ row.balance }}  </span>
         </template>
       </el-table-column>
       <el-table-column label="订单数" min-width="190px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.orderNum }}  <i icon="el-icon-copy-document" /></span>
+          <span>{{ row.orderNum }}  </span>
         </template>
       </el-table-column>
 
       <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">创建：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>创建：{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
       <el-table-column label="时间" min-width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">修改：{{ row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
+          <span>修改：{{ row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}<br></span>
         </template>
       </el-table-column>
 

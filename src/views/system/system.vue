@@ -27,9 +27,9 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="账号ID" prop="id" sortable="custom" align="center" width="310">
+      <el-table-column label="账号ID" prop="id" sortable="custom" align="center" width="130">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span class="link-type" @click="handleCopy(scope.row.id,$event)">点击复制ID</span>
         </template>
       </el-table-column>
       <el-table-column label="登录账号" prop="" align="center" width="180">
@@ -42,7 +42,7 @@
           <span>{{ scope.row.role }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="电话" prop="" align="center" width="210">
+      <el-table-column label="电话" prop="" align="center" width="180">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
@@ -58,7 +58,7 @@
       <!--<span v-else>0</span>-->
       <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="最后登录时间" width="250px" align="center">
+      <el-table-column label="最后登录时间" width="200px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.lastLoginTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -67,8 +67,8 @@
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             修改
-          </el-button>
-          <el-button size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
+          </el-button><br>
+          <el-button size="mini" style="margin-top: 5px" type="danger" @click="handleModifyStatus(row,'deleted')">
             删除
           </el-button>
         </template>
